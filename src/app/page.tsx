@@ -1,10 +1,9 @@
-"use client";
-
+"use client"
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { valerians, Valerian } from '@/data/valerians';
 
-const ITEMS_PER_LOAD = 30;
+const ITEMS_PER_LOAD = 25;
 
 const ValeriaHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -79,34 +78,34 @@ const ValeriaHub: React.FC = () => {
   return (
     <div className="min-h-screen bg-indigo-950 text-white px-2 sm:px-4 py-4 sm:py-8">
       <div className="container mx-auto max-w-6xl">
-      <header className="bg-indigo-900 py-4">
-        <div className="container mx-auto max-w-6xl px-4">
-          <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Hub</h1>
-        </div>
-      </header>
-      <nav className="py-8">
-        <div className="container mx-auto max-w-6xl px-4">
-          <ul className="flex justify-center space-x-4">
-            <li>
-              <Link href="/compare" className="text-yellow-400 hover:text-yellow-300">
-                Compare
-              </Link>
-            </li>
-           <li>•</li>
-            <li>
-              <Link href="/minigame" className="text-yellow-400 hover:text-yellow-300">
-                Minigame
-              </Link>
-            </li>
-            <li>•</li>
-            <li>
-              <Link href="/socials" className="text-yellow-400 hover:text-yellow-300">
-                Links
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </nav>
+        <header className="bg-indigo-900 py-4">
+          <div className="container mx-auto max-w-6xl px-4">
+            <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Hub</h1>
+          </div>
+        </header>
+        <nav className="py-4 sm:py-8">
+          <div className="container mx-auto max-w-6xl px-4">
+            <ul className="flex flex-wrap justify-center space-x-2 sm:space-x-4">
+              <li className="mb-2 sm:mb-0">
+                <Link href="/compare" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                  Compare
+                </Link>
+              </li>
+              <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
+              <li className="mb-2 sm:mb-0">
+                <Link href="/minigame" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                  Minigame
+                </Link>
+              </li>
+              <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
+              <li className="mb-2 sm:mb-0">
+                <Link href="/socials" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                  Links
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </nav>
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-2 sm:gap-4">
           <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase tracking-wide">
             {filteredValerians.length} Valerians
