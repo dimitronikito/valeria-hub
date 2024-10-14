@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Press_Start_2P } from 'next/font/google';
+import { Analytics } from "@vercel/analytics/react"
 
 const pressStart2P = Press_Start_2P({
   weight: '400',
@@ -20,7 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={pressStart2P.className}>
-      <body className={pressStart2P.className}>{children}</body>
+      <body className={pressStart2P.className}>{children}
+        <Analytics />
+      </body>
     </html>
   )
 }
