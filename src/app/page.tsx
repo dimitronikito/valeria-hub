@@ -55,7 +55,7 @@ const ValeriaHub: React.FC = () => {
       <Link href={`/valerian/${valerian.name}`}>
         <div className="bg-indigo-800 p-3 sm:p-3 rounded-lg shadow-md cursor-pointer hover:bg-indigo-700 transition-all duration-300 border-2 border-indigo-600">
           <div className="mb-2">
-            <h2 className="text-xs sm:text-sm md:text-base font-bold leading-tight uppercase text-center">{valerian.name}</h2>
+            <h2 className="text-xs sm:text-sm md:text-base font-bold leading-tight uppercase text-center truncate" title={valerian.name}>{valerian.name}</h2>
             <div className="flex justify-center items-center">
               {[...Array(valerian.stars)].map((_, index) => (
                 <span key={index} className="text-yellow-400 text-xs sm:text-sm">★</span>
@@ -70,7 +70,7 @@ const ValeriaHub: React.FC = () => {
               loading="lazy"
             />
           </div>
-          <p className="mt-2 text-[8px] sm:text-[10px] md:text-xs uppercase text-center">{valerian.type} {valerian.class}</p>
+          <p className="mt-2 text-[8px] sm:text-[10px] md:text-xs uppercase text-center truncate" title={`${valerian.type} ${valerian.class}`}>{valerian.type} {valerian.class}</p>
         </div>
       </Link>
     );
@@ -79,7 +79,34 @@ const ValeriaHub: React.FC = () => {
   return (
     <div className="min-h-screen bg-indigo-950 text-white px-2 sm:px-4 py-4 sm:py-8">
       <div className="container mx-auto max-w-6xl">
-        <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-8 uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Hub</h1>
+      <header className="bg-indigo-900 py-4">
+        <div className="container mx-auto max-w-6xl px-4">
+          <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Hub</h1>
+        </div>
+      </header>
+      <nav className="py-8">
+        <div className="container mx-auto max-w-6xl px-4">
+          <ul className="flex justify-center space-x-4">
+            <li>
+              <Link href="/compare" className="text-yellow-400 hover:text-yellow-300">
+                Compare
+              </Link>
+            </li>
+           <li>•</li>
+            <li>
+              <Link href="/minigame" className="text-yellow-400 hover:text-yellow-300">
+                Minigame
+              </Link>
+            </li>
+            <li>•</li>
+            <li>
+              <Link href="/socials" className="text-yellow-400 hover:text-yellow-300">
+                Links
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </nav>
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-2 sm:gap-4">
           <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase tracking-wide">
             {filteredValerians.length} Valerians
