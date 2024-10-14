@@ -1,101 +1,118 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Link from 'next/link';
+import { valerians, Valerian } from '@/data/valerians';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+const ITEMS_PER_LOAD = 30;
+
+const ValeriaHub: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [visibleItems, setVisibleItems] = useState(ITEMS_PER_LOAD);
+  const loaderRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const filteredValerians = valerians.filter((valerian) =>
+    valerian.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    valerian.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    valerian.class.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const loadMoreItems = useCallback(() => {
+    if (isLoading) return;
+    setIsLoading(true);
+    setTimeout(() => {
+      setVisibleItems((prevVisibleItems) => 
+        Math.min(prevVisibleItems + ITEMS_PER_LOAD, filteredValerians.length)
+      );
+      setIsLoading(false);
+    }, 500);
+  }, [filteredValerians.length, isLoading]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoading) {
+          loadMoreItems();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [loadMoreItems, isLoading]);
+
+  useEffect(() => {
+    setVisibleItems(ITEMS_PER_LOAD);
+  }, [searchTerm]);
+
+  const ValerianCard: React.FC<{ valerian: Valerian }> = React.memo(({ valerian }) => {
+    return (
+      <Link href={`/valerian/${valerian.name}`}>
+        <div className="bg-indigo-800 p-3 sm:p-3 rounded-lg shadow-md cursor-pointer hover:bg-indigo-700 transition-all duration-300 border-2 border-indigo-600">
+          <div className="mb-2">
+            <h2 className="text-xs sm:text-sm md:text-base font-bold leading-tight uppercase text-center">{valerian.name}</h2>
+            <div className="flex justify-center items-center">
+              {[...Array(valerian.stars)].map((_, index) => (
+                <span key={index} className="text-yellow-400 text-xs sm:text-sm">★</span>
+              ))}
+            </div>
+          </div>
+          <div className="relative w-full pb-[100%] border-2 border-indigo-400">
+            <img
+              src={valerian.image}
+              alt={valerian.name}
+              className="absolute inset-0 w-full h-full object-cover"
+              loading="lazy"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+          <p className="mt-2 text-[8px] sm:text-[10px] md:text-xs uppercase text-center">{valerian.type} {valerian.class}</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </Link>
+    );
+  });
+
+  return (
+    <div className="min-h-screen bg-indigo-950 text-white px-2 sm:px-4 py-4 sm:py-8">
+      <div className="container mx-auto max-w-6xl">
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-8 uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Hub</h1>
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-2 sm:gap-4">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase tracking-wide">
+            {filteredValerians.length} Valerians
+          </h2>
+          <div className="relative w-full sm:w-auto">
+            <input
+              type="text"
+              placeholder="SEARCH..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full sm:w-64 px-3 sm:px-4 py-2 pl-8 sm:pl-10 rounded-lg bg-indigo-800 text-white placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs uppercase tracking-wide"
+              aria-label="Search Valerians"
+            />
+            <span className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-indigo-300">🔍</span>
+          </div>
+        </div>
+        {filteredValerians.length === 0 ? (
+          <p className="text-center text-indigo-300 mt-4 sm:mt-8 text-xs sm:text-sm uppercase tracking-wide">No Valerians found. Try a different search term.</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4">
+            {filteredValerians.slice(0, visibleItems).map((valerian) => (
+              <ValerianCard key={valerian.id} valerian={valerian} />
+            ))}
+          </div>
+        )}
+        {visibleItems < filteredValerians.length && (
+          <div ref={loaderRef} className="text-center mt-4 sm:mt-6 p-2 sm:p-4 text-xs sm:text-sm uppercase tracking-wide">
+            {isLoading ? 'Loading more...' : 'Scroll for more'}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+export default ValeriaHub;
