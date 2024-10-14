@@ -12,6 +12,30 @@ const pressStart2P = Press_Start_2P({
 export const metadata: Metadata = {
   title: "Valeria Hub",
   description: "Valeria Community Site",
+  openGraph: {
+    title: 'Valeria Hub',
+    description: 'Valeria Community Site',
+    images: [
+      {
+        url: '/leafy_preview.png',
+        width: 1200,
+        height: 630,
+        alt: 'Valeria Hub Preview',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Valeria Hub',
+    description: 'Valeria Community Site',
+    images: ['/leafy_preview.png'],
+  },
+  other: {
+    'discord:title': 'Valeria Hub',
+    'discord:description': 'Valeria Community Site',
+    'discord:image': '/leafy_preview.png',
+  }
 };
 
 export default function RootLayout({
@@ -21,7 +45,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={pressStart2P.className}>
-      <body className={pressStart2P.className}>{children}
+      <body className={pressStart2P.className}>
+        {children}
         <Analytics />
       </body>
     </html>
