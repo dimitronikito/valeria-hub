@@ -65,9 +65,9 @@ const ValerianDetail: React.FC<PageProps> = ({ params }) => {
               <section>
                 <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-yellow-400">Stats</h2>
                 <ul className="list-disc list-inside space-y-1 sm:space-y-2 text-sm sm:text-base">
-                  <li>Attack: {valerian.attack}</li>
-                  <li>Defense: {valerian.defense}</li>
-                  <li>Speed: {valerian.speed}</li>
+                  <li>Attack: </li>
+                  <li>Defense: </li>
+                  <li>Speed: </li>
                 </ul>
               </section>
             </div>
