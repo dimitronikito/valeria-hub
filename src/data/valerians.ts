@@ -258,7 +258,7 @@ export const valerians = [
     stars: 1,
     passive: 'Robust',
     passiveDescription: "When receiving damage, increase one's own maximum health.",
-    image: '/valerians/bastion.png'
+    image: '/valerians/leafy.png'
   },
     {
     id: 26,
