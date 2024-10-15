@@ -7,13 +7,17 @@ import { valerians, Valerian } from '@/data/valerians';
 
 export default function ComparePage() {
   const [selectedClass, setSelectedClass] = useState<string>('');
+  const [selectedStar, setSelectedStar] = useState<number | ''>('');
   
   const classes = useMemo(() => Array.from(new Set(valerians.map(v => v.class))), []);
+  const stars = [1, 2, 3, 4];
   
   const filteredValerians = useMemo(() => 
-    valerians.filter(v => v.class === selectedClass)
-      .sort((a, b) => b.stars - a.stars),
-    [selectedClass]
+    valerians.filter(v => 
+      (selectedClass === '' || v.class === selectedClass) &&
+      (selectedStar === '' || v.stars === selectedStar)
+    ).sort((a, b) => b.stars - a.stars),
+    [selectedClass, selectedStar]
   );
 
   const StatBar: React.FC<{ value: number, max: number, color: string }> = ({ value, max, color }) => (
@@ -69,41 +73,66 @@ export default function ComparePage() {
     </div>
   ));
 
+  const EmptyState: React.FC = () => (
+    <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+      <h3 className="text-xl font-semibold text-indigo-200 mb-2">No Valerians Found</h3>
+      <p className="text-indigo-400">Try adjusting your class or star filters to see more Valerians!</p>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-indigo-950 text-white px-2 sm:px-4 py-4 sm:py-8">
       <div className="container mx-auto max-w-6xl">           
         <header className="bg-indigo-900 py-4">
-        <div className="container mx-auto max-w-6xl px-4">
-          <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Compare Tool</h1>
-        </div>
-      </header>
-      <Link href="/" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
-        ← Back
-      </Link>
-      <div className="container mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-8">
-          <label htmlFor="class-select" className="block mb-2 text-sm font-medium text-white">Select Valerian Class:</label>
-          <select
-            id="class-select"
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-            className="bg-indigo-700 border border-indigo-500 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
-          >
-            <option value="">Choose a class</option>
-            {classes.map(c => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-        
-        {selectedClass && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {filteredValerians.map(valerian => (
-              <ValerianCard key={valerian.id} valerian={valerian} />
-            ))}
+          <div className="container mx-auto max-w-6xl px-4">
+            <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Compare Tool</h1>
           </div>
-        )}
-      </div>
+        </header>
+        <Link href="/" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
+          ← Back
+        </Link>
+        <div className="container mx-auto max-w-6xl px-4 py-8">
+          <div className="mb-8 flex flex-col sm:flex-row gap-4">
+            <div className="sm:w-3/4">
+              <label htmlFor="class-select" className="block mb-2 text-sm font-medium text-white">Select Valerian Class:</label>
+              <select
+                id="class-select"
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
+                className="bg-indigo-700 border border-indigo-500 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
+              >
+                <option value="">All classes</option>
+                {classes.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div className="sm:w-1/4">
+              <label htmlFor="star-select" className="block mb-2 text-sm font-medium text-white">Select Stars:</label>
+              <select
+                id="star-select"
+                value={selectedStar}
+                onChange={(e) => setSelectedStar(e.target.value === '' ? '' : Number(e.target.value))}
+                className="bg-indigo-700 border border-indigo-500 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
+              >
+                <option value="">All stars</option>
+                {stars.map(s => (
+                  <option key={s} value={s}>{s} Star{s > 1 ? 's' : ''}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          {filteredValerians.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {filteredValerians.map(valerian => (
+                <ValerianCard key={valerian.id} valerian={valerian} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState />
+          )}
+        </div>
       </div>
     </div>
   );
