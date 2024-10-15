@@ -25,7 +25,7 @@ const ValeriaHub: React.FC = () => {
   };
 
   const evolutionHeaders: Record<StarRating, string> = {
-    1: "First Evolutions",
+    1: "Starters",
     2: "Second Evolutions",
     3: "Third Evolutions",
     4: "Legendaries"
