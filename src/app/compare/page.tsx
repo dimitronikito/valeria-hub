@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image'
 import { valerians, Valerian } from '@/data/valerians';
 
 export default function ComparePage() {
@@ -30,11 +31,11 @@ export default function ComparePage() {
         ))}
       </div>
       <div className="relative w-24 h-24 sm:w-32 sm:h-32 border-2 border-indigo-400 mb-2">
-        <img
+        <Image
           src={valerian.image}
           alt={valerian.name}
-          className="absolute inset-0 w-full h-full object-cover"
-          loading="lazy"
+          layout="fill"
+          objectFit="cover"
         />
       </div>
       <p className="text-xs sm:text-sm uppercase text-center mb-2">{valerian.type}</p>

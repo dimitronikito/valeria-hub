@@ -1,7 +1,8 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { valerians, Valerian } from '@/data/valerians';
+import Image from 'next/image';
+import { valerians } from '@/data/valerians';
 
 interface PageProps {
   params: {
@@ -53,10 +54,11 @@ const ValerianDetail: React.FC<PageProps> = ({ params }) => {
           <div className="md:flex">
             <div className="md:w-1/2">
               <div className="relative w-full pb-[100%]">
-                <img
-                  src={valerian.image}
-                  alt={valerian.name}
-                  className="absolute inset-0 w-full h-full object-cover"
+                <Image
+                src={valerian.image}
+                alt={valerian.name}
+                layout="fill"
+                objectFit="cover"
                 />
               </div>
             </div>

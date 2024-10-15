@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { valerians, Valerian } from '@/data/valerians';
 
 const ITEMS_PER_LOAD = 25;
@@ -62,11 +63,13 @@ const ValeriaHub: React.FC = () => {
             </div>
           </div>
           <div className="relative w-full pb-[100%] border-2 border-indigo-400">
-            <img
+            <Image
               src={valerian.image}
               alt={valerian.name}
-              className="absolute inset-0 w-full h-full object-cover"
-              loading="lazy"
+              layout="fill"
+              objectFit="cover"
+              sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+              priority={valerian.id <= ITEMS_PER_LOAD}
             />
           </div>
           <p className="mt-2 text-[8px] sm:text-[10px] md:text-xs uppercase text-center truncate" title={`${valerian.type} ${valerian.class}`}>{valerian.type} {valerian.class}</p>
@@ -80,7 +83,7 @@ const ValeriaHub: React.FC = () => {
       <div className="container mx-auto max-w-6xl">
         <header className="bg-indigo-900 py-4">
           <div className="container mx-auto max-w-6xl px-4">
-            <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Hub</h1>
+            <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Community Hub</h1>
           </div>
         </header>
         <nav className="py-4 sm:py-8">
@@ -93,8 +96,8 @@ const ValeriaHub: React.FC = () => {
               </li>
               <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
               <li className="mb-2 sm:mb-0">
-                <Link href="/minigame" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
-                  Minigame
+                <Link href="/arcade" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                  Arcade
                 </Link>
               </li>
               <li className="mb-2 sm:mb-0 text-yellow-400">•</li>

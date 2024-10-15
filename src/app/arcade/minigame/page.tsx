@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image'
 import { valerians, Valerian } from '@/data/valerians';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/BattleSimulatorComponents';
 
@@ -155,7 +156,13 @@ const ValerianBattleSimulator: React.FC = () => {
       </CardHeader>
       <CardContent>
         <div className="relative w-16 h-16 mx-auto mb-2 border-2 border-indigo-400">
-          <img src={valerian.image} alt={valerian.name} className="absolute inset-0 w-full h-full object-cover" />
+        <Image
+          src={valerian.image}
+          alt={valerian.name}
+          layout="fill"
+          objectFit="cover"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         </div>
         <p className="text-xs text-center mb-2">{valerian.type} {valerian.class}</p>
         <div className="w-full bg-gray-700 rounded-full h-2.5">
@@ -195,7 +202,7 @@ const ValerianBattleSimulator: React.FC = () => {
           <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Mini Battle</h1>
         </div>
       </header>
-      <Link href="/" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
+      <Link href="/arcade" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
         ← Back
       </Link>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
