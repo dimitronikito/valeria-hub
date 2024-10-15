@@ -1,16 +1,13 @@
 "use client"
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { valerians, Valerian } from '@/data/valerians';
 
-const ITEMS_PER_LOAD = 25;
-
 const ValeriaHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [visibleItems, setVisibleItems] = useState(ITEMS_PER_LOAD);
-  const loaderRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const filteredValerians = valerians.filter((valerian) =>
     valerian.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -18,42 +15,35 @@ const ValeriaHub: React.FC = () => {
     valerian.class.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const loadMoreItems = useCallback(() => {
-    if (isLoading) return;
-    setIsLoading(true);
-    setTimeout(() => {
-      setVisibleItems((prevVisibleItems) => 
-        Math.min(prevVisibleItems + ITEMS_PER_LOAD, filteredValerians.length)
-      );
-      setIsLoading(false);
-    }, 500);
-  }, [filteredValerians.length, isLoading]);
+  type StarRating = 1 | 2 | 3 | 4;
+
+  const groupedValerians: Record<StarRating, Valerian[]> = {
+    1: filteredValerians.filter(v => v.stars === 1),
+    2: filteredValerians.filter(v => v.stars === 2),
+    3: filteredValerians.filter(v => v.stars === 3),
+    4: filteredValerians.filter(v => v.stars === 4)
+  };
+
+  const evolutionHeaders: Record<StarRating, string> = {
+    1: "First Evolutions",
+    2: "Second Evolutions",
+    3: "Third Evolutions",
+    4: "Legendaries"
+  };
+
+  const starRatings: StarRating[] = [1, 2, 3, 4];
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoading) {
-          loadMoreItems();
-        }
-      },
-      { threshold: 1.0 }
-    );
+    setIsLoaded(true);
+  }, []);
 
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [loadMoreItems, isLoading]);
-
-  useEffect(() => {
-    setVisibleItems(ITEMS_PER_LOAD);
-  }, [searchTerm]);
-
-  const ValerianCard: React.FC<{ valerian: Valerian }> = React.memo(({ valerian }) => {
+  const ValerianCard: React.FC<{ valerian: Valerian; index: number }> = React.memo(({ valerian, index }) => {
     return (
       <Link href={`/valerian/${valerian.name}`}>
-        <div className="bg-indigo-800 p-3 sm:p-3 rounded-lg shadow-md cursor-pointer hover:bg-indigo-700 transition-all duration-300 border-2 border-indigo-600">
+        <div 
+          className={`bg-indigo-800 p-3 sm:p-3 rounded-lg shadow-md cursor-pointer hover:bg-indigo-700 transition-all duration-300 border-2 border-indigo-600 opacity-0 ${isLoaded ? 'animate-fade-in' : ''}`} 
+          style={{ animationDelay: `${index * 50}ms` }}
+        >
           <div className="mb-2">
             <h2 className="text-xs sm:text-sm md:text-base font-bold leading-tight uppercase text-center truncate" title={valerian.name}>{valerian.name}</h2>
             <div className="flex justify-center items-center">
@@ -69,7 +59,6 @@ const ValeriaHub: React.FC = () => {
               layout="fill"
               objectFit="cover"
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
-              priority={valerian.id <= ITEMS_PER_LOAD}
             />
           </div>
           <p className="mt-2 text-[8px] sm:text-[10px] md:text-xs uppercase text-center truncate" title={`${valerian.type} ${valerian.class}`}>{valerian.type} {valerian.class}</p>
@@ -81,6 +70,21 @@ const ValeriaHub: React.FC = () => {
   return (
     <div className="min-h-screen bg-indigo-950 text-white px-2 sm:px-4 py-4 sm:py-8">
       <div className="container mx-auto max-w-6xl">
+        <style jsx global>{`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translate3d(0, 20px, 0);
+            }
+            to {
+              opacity: 1;
+              transform: translate3d(0, 0, 0);
+            }
+          }
+          .animate-fade-in {
+            animation: fadeInUp 0.5s ease-out forwards;
+          }
+        `}</style>
         <header className="bg-indigo-900 py-4">
           <div className="container mx-auto max-w-6xl px-4">
             <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Community Hub</h1>
@@ -128,16 +132,20 @@ const ValeriaHub: React.FC = () => {
         {filteredValerians.length === 0 ? (
           <p className="text-center text-indigo-300 mt-4 sm:mt-8 text-xs sm:text-sm uppercase tracking-wide">No Valerians found. Try a different search term.</p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4">
-            {filteredValerians.slice(0, visibleItems).map((valerian) => (
-              <ValerianCard key={valerian.id} valerian={valerian} />
-            ))}
-          </div>
-        )}
-        {visibleItems < filteredValerians.length && (
-          <div ref={loaderRef} className="text-center mt-4 sm:mt-6 p-2 sm:p-4 text-xs sm:text-sm uppercase tracking-wide">
-            {isLoading ? 'Loading more...' : 'Scroll for more'}
-          </div>
+          starRatings.map((stars) => (
+            groupedValerians[stars].length > 0 && (
+              <div key={stars} className="mb-8">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 text-yellow-400">
+                  {evolutionHeaders[stars]}
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4">
+                  {groupedValerians[stars].map((valerian, index) => (
+                    <ValerianCard key={valerian.id} valerian={valerian} index={index} />
+                  ))}
+                </div>
+              </div>
+            )
+          ))
         )}
       </div>
     </div>
