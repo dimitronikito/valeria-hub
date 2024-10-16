@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Phaser from 'phaser';
+import { SHA256 } from 'crypto-js';
 
 const FlappyBirbGame: React.FC<{
-  setCurrentScore: (score: number) => void;
+  setCurrentScore: (score: number, hash: string) => void;
   setShowSubmitForm: (show: boolean) => void;
 }> = ({ setCurrentScore, setShowSubmitForm }) => {
   const gameRef = useRef<HTMLDivElement>(null);
   const [gameInstance, setGameInstance] = useState<Phaser.Game | null>(null);
+  const secretRef = useRef(Math.random().toString(36).substring(2, 15));
 
   const BASE_WIDTH = 400;
   const BASE_HEIGHT = 600;
@@ -197,7 +199,11 @@ useEffect(() => {
             this.pipeTimer.remove();
           }
 
-          setCurrentScore(this.score);
+          const secret = Math.random().toString(36).substring(2, 15);
+          const scoreHash = SHA256(`${this.score}:${secret}`).toString();
+          console.log("Game Over - Score:", this.score);
+          console.log("Game Over - Hash:", scoreHash);
+          setCurrentScore(this.score, scoreHash);
           setShowSubmitForm(true);
         }
       }

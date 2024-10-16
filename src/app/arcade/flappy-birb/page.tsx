@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
+import { collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, getDocs, where, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { SHA256 } from 'crypto-js';
 
 const FlappyBirbGame = dynamic(() => import('./FlappyBirbGame'), { 
   ssr: false,
@@ -13,48 +16,94 @@ const FlappyBirbGame = dynamic(() => import('./FlappyBirbGame'), {
   ),
 });
 
+interface LeaderboardEntry {
+  id: string;
+  name: string;
+  score: number;
+}
+
 const FlappyBirb: React.FC = () => {
   const [showSubmitForm, setShowSubmitForm] = useState(false);
   const [username, setUsername] = useState('');
   const [currentScore, setCurrentScore] = useState(0);
-  const [leaderboard, setLeaderboard] = useState<Array<{name: string, score: number}>>([]);
+  const [scoreHash, setScoreHash] = useState('');
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [restartKey, setRestartKey] = useState(0);
 
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string>('');
+
   useEffect(() => {
-    const storedLeaderboard = localStorage.getItem('flappyBirbLeaderboard');
-    if (storedLeaderboard) {
-      setLeaderboard(JSON.parse(storedLeaderboard));
-    }
+    const q = query(collection(db, 'leaderboard'), orderBy('score', 'desc'), limit(10));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const leaderboardEntries: LeaderboardEntry[] = [];
+      querySnapshot.forEach((doc) => {
+        leaderboardEntries.push({ id: doc.id, ...doc.data() } as LeaderboardEntry);
+      });
+      setLeaderboard(leaderboardEntries);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const handleSubmitScore = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (username.trim()) {
-      const newLeaderboard = updateLeaderboard(username, currentScore);
-      setLeaderboard(newLeaderboard);
-      localStorage.setItem('flappyBirbLeaderboard', JSON.stringify(newLeaderboard));
-      setShowSubmitForm(false);
-      setUsername('');
-      restartGame();
-    }
+const handleSetScore = (score: number, hash: string) => {
+    console.log(`Setting score: ${score}, hash: ${hash}`);
+    setCurrentScore(score);
+    setScoreHash(hash);
   };
 
-  const updateLeaderboard = (name: string, score: number): Array<{name: string, score: number}> => {
-    const newLeaderboard = [...leaderboard];
-    const existingEntryIndex = newLeaderboard.findIndex(entry => entry.name.toLowerCase() === name.toLowerCase());
+const handleSubmitScore = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log("Submit score button clicked");
+  setSubmitError(null);
+  setDebugInfo('');
 
-    if (existingEntryIndex !== -1) {
-      if (score > newLeaderboard[existingEntryIndex].score) {
-        newLeaderboard[existingEntryIndex].score = score;
-      }
+  try {
+    if (!username.trim()) {
+      throw new Error("Username is empty");
+    }
+
+    if (currentScore < 0 || currentScore > 1000) {
+      throw new Error(`Invalid score: ${currentScore}`);
+    }
+
+    console.log(`Submitting score: ${currentScore} for user: ${username}`);
+
+    const leaderboardRef = collection(db, 'leaderboard');
+    const q = query(leaderboardRef, where('name', '==', username.trim()));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      console.log("Creating new leaderboard entry");
+      await addDoc(leaderboardRef, {
+        name: username.slice(0, 20),
+        score: currentScore,
+        timestamp: serverTimestamp()
+      });
     } else {
-      newLeaderboard.push({ name, score });
+      console.log("Updating existing leaderboard entry");
+      const doc = querySnapshot.docs[0];
+      const existingScore = doc.data().score;
+      if (currentScore > existingScore) {
+        await updateDoc(doc.ref, {
+          score: currentScore,
+          timestamp: serverTimestamp()
+        });
+      } else {
+        console.log("New score not higher than existing score, not updating");
+      }
     }
 
-    return newLeaderboard
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 10);
-  };
+    console.log("Score submitted successfully");
+    setShowSubmitForm(false);
+    setUsername('');
+    restartGame();
+  } catch (error) {
+    console.error("Error in handleSubmitScore:", error);
+    setSubmitError(error instanceof Error ? error.message : "An unknown error occurred");
+    setDebugInfo(JSON.stringify({ currentScore, scoreHash, username }, null, 2));
+  }
+};
 
   const restartGame = () => {
     setRestartKey(prevKey => prevKey + 1);
@@ -77,7 +126,7 @@ const FlappyBirb: React.FC = () => {
           <div className="lg:w-2/3">
             <FlappyBirbGame 
               key={restartKey}
-              setCurrentScore={setCurrentScore} 
+              setCurrentScore={handleSetScore} 
               setShowSubmitForm={setShowSubmitForm} 
             />
           </div>
@@ -93,7 +142,7 @@ const FlappyBirb: React.FC = () => {
               </thead>
               <tbody>
                 {leaderboard.map((entry, index) => (
-                  <tr key={index}>
+                  <tr key={entry.id}>
                     <td>{index + 1}</td>
                     <td>{entry.name}</td>
                     <td>{entry.score}</td>
@@ -115,7 +164,14 @@ const FlappyBirb: React.FC = () => {
                   placeholder="Enter your name"
                   className="w-full p-2 mb-4 text-black"
                 />
-                <button type="submit" className="bg-yellow-400 text-indigo-900 px-4 py-2 rounded mr-2">
+                <button 
+                  type="submit" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSubmitScore(e);
+                  }}
+                  className="bg-yellow-400 text-indigo-900 px-4 py-2 rounded mr-2"
+                >
                   Submit Score
                 </button>
                 <button 
@@ -129,6 +185,14 @@ const FlappyBirb: React.FC = () => {
                   Play Again
                 </button>
               </form>
+              {submitError && (
+                <p className="text-red-500 mt-2">{submitError}</p>
+              )}
+              {debugInfo && (
+                <pre className="mt-4 p-2 bg-gray-800 text-xs overflow-auto">
+                  {debugInfo}
+                </pre>
+              )}
             </div>
           </div>
         )}
