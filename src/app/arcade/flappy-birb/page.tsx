@@ -188,11 +188,11 @@ const handleSubmitScore = async (e: React.FormEvent) => {
               {submitError && (
                 <p className="text-red-500 mt-2">{submitError}</p>
               )}
-              {debugInfo && (
+              {/* {debugInfo && (
                 <pre className="mt-4 p-2 bg-gray-800 text-xs overflow-auto">
                   {debugInfo}
                 </pre>
-              )}
+              )} */}
             </div>
           </div>
         )}
