@@ -14,8 +14,66 @@ const FlappyBirbGame: React.FC<{
   const BASE_HEIGHT = 600;
   const ASPECT_RATIO = BASE_WIDTH / BASE_HEIGHT;
 
-useEffect(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined' && gameRef.current) {
+      class LoadingScene extends Phaser.Scene {
+        constructor() {
+          super('LoadingScene');
+        }
+
+        preload() {
+          // Create loading bar
+          const progressBar = this.add.graphics();
+          const progressBox = this.add.graphics();
+          progressBox.fillStyle(0x222222, 0.8);
+          progressBox.fillRect(BASE_WIDTH / 2 - 160, BASE_HEIGHT / 2 - 25, 320, 50);
+
+          const loadingText = this.make.text({
+            x: BASE_WIDTH / 2,
+            y: BASE_HEIGHT / 2 - 50,
+            text: 'Loading...',
+            style: {
+              font: '20px monospace',
+              color: '#ffffff'
+            }
+          });
+          loadingText.setOrigin(0.5, 0.5);
+
+          const percentText = this.make.text({
+            x: BASE_WIDTH / 2,
+            y: BASE_HEIGHT / 2 - 5,
+            text: '0%',
+            style: {
+              font: '18px monospace',
+              color: '#ffffff'
+            }
+          });
+          percentText.setOrigin(0.5, 0.5);
+
+          this.load.on('progress', (value: number) => {
+            percentText.setText(parseInt((value * 100).toString()) + '%');
+            progressBar.clear();
+            progressBar.fillStyle(0xffffff, 1);
+            progressBar.fillRect(BASE_WIDTH / 2 - 150, BASE_HEIGHT / 2 - 15, 300 * value, 30);
+          });
+
+          this.load.on('complete', () => {
+            progressBar.destroy();
+            progressBox.destroy();
+            loadingText.destroy();
+            percentText.destroy();
+          });
+
+          // Load game assets
+          this.load.image('bird', '/leafy_preview.png');
+          this.load.audio('backgroundMusic', '/lbtw_battle_loop_2.wav');
+        }
+
+        create() {
+          this.scene.start('MainScene');
+        }
+      }
+
       class MainScene extends Phaser.Scene {
         private bird!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
         private pipes!: Phaser.Physics.Arcade.Group;
@@ -25,19 +83,19 @@ useEffect(() => {
         private pipeTimer!: Phaser.Time.TimerEvent;
         private startText!: Phaser.GameObjects.Text;
         private gameStarted: boolean = false;
+        private backgroundMusic!: Phaser.Sound.BaseSound;
 
         constructor() {
           super('MainScene');
-        }
-
-        preload() {
-          this.load.image('bird', '/valerians/nocturnix.png');
         }
 
         create() {
           this.gameOver = false;
           this.gameStarted = false;
           this.score = 0;
+
+          // Load and play background music
+          this.backgroundMusic = this.sound.add('backgroundMusic', { loop: true });
 
           // Set a gradient background
           const gradient = this.add.graphics();
@@ -61,15 +119,14 @@ useEffect(() => {
 
           // Create the bird sprite
           this.bird = this.physics.add.sprite(BASE_WIDTH * 0.25, BASE_HEIGHT * 0.5, 'bird');
-          this.bird.setScale(0.05);
+          this.bird.setScale(0.03);
           
-          // Crop the bird sprite to make it square
-          const texture = this.textures.get('bird');
-          const frame = texture.get();
-          const size = Math.min(frame.width, frame.height);
-          this.bird.setCrop((frame.width - size) / 2, (frame.height - size) / 2, size, size);
+          // Adjust the bird's body to be smaller than its visual size for more forgiving collisions
+          const birdWidth = this.bird.width * 0.6;
+          const birdHeight = this.bird.height * 0.6;
+          this.bird.body.setSize(birdWidth, birdHeight);
+          this.bird.body.setOffset((this.bird.width - birdWidth) / 2, (this.bird.height - birdHeight) / 2);
 
-          this.bird.setCircle(this.bird.width * 0.6);
           this.bird.setCollideWorldBounds(true);
           this.bird.body.allowGravity = false;
  
@@ -141,6 +198,8 @@ useEffect(() => {
             callbackScope: this,
             loop: true
           });
+          // Start playing the background music
+          this.backgroundMusic.play();
         }
 
         update() {
@@ -199,6 +258,9 @@ useEffect(() => {
             this.pipeTimer.remove();
           }
 
+          // Stop the background music
+          this.backgroundMusic.stop();
+
           const secret = Math.random().toString(36).substring(2, 15);
           const scoreHash = SHA256(`${this.score}:${secret}`).toString();
           console.log("Game Over - Score:", this.score);
@@ -221,7 +283,7 @@ useEffect(() => {
             debug: false
           }
         },
-        scene: MainScene,
+        scene: [LoadingScene, MainScene],
         scale: {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH
