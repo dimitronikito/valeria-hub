@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Press_Start_2P } from 'next/font/google';
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const pressStart2P = Press_Start_2P({
   weight: '400',
@@ -48,6 +49,7 @@ export default function RootLayout({
       <body className={pressStart2P.className}>
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
