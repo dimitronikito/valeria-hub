@@ -240,44 +240,82 @@ useEffect(() => {
     router.push(`/inventory/lbtw/${nft.id}?balance=${nft.balance}`);
   };
 
-  const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index }) => {
-    const parseName = (name: string = '') => {
-      const match = name.match(/(.*?)\s*\(LVL \d+\)/);
-      return match ? match[1] : name;
-    };
+const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index }) => {
+  const parseName = (name: string = '') => {
+    const match = name.match(/(.*?)\s*\(LVL \d+\)/);
+    return match ? match[1] : name;
+  };
 
-    const displayName = parseName(nft.metadata?.name);
+  const displayName = parseName(nft.metadata?.name);
 
-    return (
-      <div 
-        className={`bg-indigo-800 p-4 rounded-lg shadow-md flex flex-col h-full relative overflow-hidden opacity-0 ${isLoaded ? 'animate-fade-in' : ''} cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl`} 
-        style={{ animationDelay: `${index * 50}ms` }}
-      >
-        <div className="absolute top-0 right-0 bg-yellow-400 text-indigo-900 font-bold px-3 py-1 rounded-bl-lg z-10">
-          x{nft.balance}
-        </div>
-        <div className="relative w-full mb-4 flex-grow">
-          <Image 
-            src={nft.metadata?.image || '/placeholder-image.png'} 
-            alt={nft.metadata?.name || 'NFT'} 
+  const getCardStyle = () => {
+    const attributes = nft.metadata?.attributes || [];
+    const rarity = attributes.find(attr => attr.trait_type === 'Rarity')?.value;
+    const isShiny = attributes.find(attr => attr.trait_type === 'Shiny')?.value === 'Yes';
+    const isUnique = attributes.find(attr => attr.trait_type === 'Unique')?.value === 'Yes';
+
+    if (isUnique) {
+      return {
+        gradientBorder: 'bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-400',
+        glowEffect: 'shadow-[0_0_20px_8px_rgba(236,72,153,0.7)]',
+        animationClass: 'animate-pulse'
+      };
+    } else if (rarity === 'Legendary' && isShiny) {
+      return {
+        gradientBorder: 'bg-gradient-to-r from-purple-600 via-red-500 to-yellow-400',
+        glowEffect: 'shadow-[0_0_15px_5px_rgba(168,85,247,0.6)]'
+      };
+    } else if (isShiny) {
+      return {
+        gradientBorder: 'bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500',
+        glowEffect: 'shadow-[0_0_10px_3px_rgba(252,211,77,0.5)]'
+      };
+    } else if (rarity === 'Legendary') {
+      return {
+        gradientBorder: 'bg-gradient-to-r from-purple-700 via-purple-600 to-red-500',
+        glowEffect: 'shadow-[0_0_10px_2px_rgba(126,34,206,0.4)]'
+      };
+    } else {
+      return {
+        gradientBorder: 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600',
+        glowEffect: ''
+      };
+    }
+  };
+
+  const cardStyle = getCardStyle();
+
+  return (
+    <div
+      className={`rounded-lg overflow-hidden opacity-0 ${isLoaded ? 'animate-fade-in' : ''} cursor-pointer transition-all duration-300 hover:scale-105 ${cardStyle.glowEffect} ${cardStyle.animationClass || ''}`}
+      style={{ animationDelay: `${index * 50}ms` }}
+    >
+      <div className={`p-1 ${cardStyle.gradientBorder}`}>
+        <div className="bg-indigo-900 rounded-lg p-3 relative">
+          <div className="absolute top-2 right-2 bg-yellow-400 text-indigo-900 font-bold px-3 py-1 rounded-full z-10">
+            x{nft.balance}
+          </div>
+          <Image
+            src={nft.metadata?.image || '/placeholder-image.png'}
+            alt={nft.metadata?.name || 'NFT'}
             width={500}
             height={500}
-            style={{ 
-              width: '100%', 
-              height: 'auto', 
+            style={{
+              width: '100%',
+              height: 'auto',
               objectFit: 'contain',
-              maxHeight: '500px'
+              maxHeight: '200px'
             }}
             className="rounded-md"
           />
+          <div className="mt-2 text-center text-white font-semibold truncate">
+            {displayName}
+          </div>
         </div>
-        <div className="mt-auto">
-          <h3 className="text-lg font-bold text-center">{displayName}</h3>
-        </div>
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600"></div>
       </div>
-    );
-  });
+    </div>
+  );
+});
 
   useEffect(() => {
     if (filteredNFTs.length > 0) {
