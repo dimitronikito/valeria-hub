@@ -85,7 +85,7 @@ const ValeriaHub: React.FC = () => {
             animation: fadeInUp 0.5s ease-out forwards;
           }
         `}</style>
-        <header className="bg-indigo-900 py-4">
+         <header className="bg-indigo-900 py-4">
           <div className="container mx-auto max-w-6xl px-4">
             <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Valeria Community Hub</h1>
           </div>
@@ -102,6 +102,12 @@ const ValeriaHub: React.FC = () => {
               <li className="mb-2 sm:mb-0">
                 <Link href="/arcade" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
                   Arcade
+                </Link>
+              </li>
+              <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
+              <li className="mb-2 sm:mb-0">
+                <Link href="/inventory" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                  Inventory
                 </Link>
               </li>
               <li className="mb-2 sm:mb-0 text-yellow-400">•</li>

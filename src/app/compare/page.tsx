@@ -89,7 +89,7 @@ export default function ComparePage() {
           </div>
         </header>
         <Link href="/" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
-          ← Back
+          ← Home
         </Link>
         <div className="container mx-auto max-w-6xl px-4 py-8">
           <div className="mb-8 flex flex-col sm:flex-row gap-4">

@@ -203,7 +203,7 @@ const ValerianBattleSimulator: React.FC = () => {
         </div>
       </header>
       <Link href="/arcade" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
-        ← Back
+        ← Arcade
       </Link>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>

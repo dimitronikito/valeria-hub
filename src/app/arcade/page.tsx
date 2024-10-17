@@ -14,7 +14,7 @@ const ArcadePage = () => {
           </div>
         </header>
         <Link href="/" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
-          ← Back
+          ← Home
         </Link>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 mt-4 sm:mt-8">
           <Link href="/arcade/flappy-birb" passHref>

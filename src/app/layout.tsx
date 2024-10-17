@@ -3,6 +3,7 @@ import "./globals.css";
 import { Press_Start_2P } from 'next/font/google';
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { InventoryProvider } from '@/context/InventoryContext';
 
 const pressStart2P = Press_Start_2P({
   weight: '400',
@@ -47,7 +48,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={pressStart2P.className}>
       <body className={pressStart2P.className}>
-        {children}
+        <InventoryProvider>
+          {children}
+        </InventoryProvider>
         <Analytics />
         <SpeedInsights />
       </body>
