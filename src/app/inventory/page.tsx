@@ -10,7 +10,7 @@ import Web3Modal from 'web3modal';
 import { useRouter } from 'next/navigation';
 import { NFT, NFTAttribute } from '@/types/nft';
 import { useInventory } from '@/context/InventoryContext';
-
+import { LogOut } from 'lucide-react';
 
 const XAI_CHAIN_ID = 660279;
 
@@ -245,7 +245,6 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
     const match = name.match(/(.*?)\s*\(LVL \d+\)/);
     return match ? match[1] : name;
   };
-
   const displayName = parseName(nft.metadata?.name);
 
   const getCardStyle = () => {
@@ -253,7 +252,6 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
     const rarity = attributes.find(attr => attr.trait_type === 'Rarity')?.value;
     const isShiny = attributes.find(attr => attr.trait_type === 'Shiny')?.value === 'Yes';
     const isUnique = attributes.find(attr => attr.trait_type === 'Unique')?.value === 'Yes';
-
     if (isUnique) {
       return {
         gradientBorder: 'bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-400',
@@ -263,12 +261,12 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
     } else if (rarity === 'Legendary' && isShiny) {
       return {
         gradientBorder: 'bg-gradient-to-r from-purple-600 via-red-500 to-yellow-400',
-        glowEffect: 'shadow-[0_0_15px_5px_rgba(168,85,247,0.6)]'
+        glowEffect: 'shadow-[0_0_7px_3px_rgba(236,72,153,0.7)]',
       };
     } else if (isShiny) {
       return {
         gradientBorder: 'bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500',
-        glowEffect: 'shadow-[0_0_10px_3px_rgba(252,211,77,0.5)]'
+        glowEffect: 'shadow-[0_0_7px_3px_rgba(252,211,77,0.5)]'
       };
     } else if (rarity === 'Legendary') {
       return {
@@ -285,16 +283,16 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
 
   const cardStyle = getCardStyle();
 
-  return (
+return (
     <div
-      className={`rounded-lg overflow-hidden opacity-0 ${isLoaded ? 'animate-fade-in' : ''} cursor-pointer transition-all duration-300 hover:scale-105 ${cardStyle.glowEffect} ${cardStyle.animationClass || ''}`}
+      className={`rounded-lg overflow-hidden opacity-0 ${isLoaded ? 'animate-fade-in' : ''} cursor-pointer transition-all duration-300 hover:scale-105 ${cardStyle.glowEffect} ${cardStyle.animationClass || ''} group`}
       style={{ animationDelay: `${index * 50}ms` }}
     >
-      <div className={`p-1 ${cardStyle.gradientBorder}`}>
+          <div className="absolute -top-1.5 -right-1 bg-yellow-400 text-indigo-900 font-bold px-3 pt-2 pb-1 rounded-bl-xl z-10">
+        x{nft.balance}
+      </div>
+      <div className={`p-1 ${cardStyle.gradientBorder} relative overflow-hidden shimmer-border`}>
         <div className="bg-indigo-900 rounded-lg p-3 relative">
-          <div className="absolute top-2 right-2 bg-yellow-400 text-indigo-900 font-bold px-3 py-1 rounded-full z-10">
-            x{nft.balance}
-          </div>
           <Image
             src={nft.metadata?.image || '/placeholder-image.png'}
             alt={nft.metadata?.name || 'NFT'}
@@ -304,18 +302,16 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
               width: '100%',
               height: 'auto',
               objectFit: 'contain',
-              maxHeight: '200px'
+              maxHeight: '240px'
             }}
             className="rounded-md"
           />
-          <div className="mt-2 text-center text-white font-semibold truncate">
-            {displayName}
-          </div>
         </div>
       </div>
     </div>
   );
 });
+
 
   useEffect(() => {
     if (filteredNFTs.length > 0) {
@@ -350,40 +346,42 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
             <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">LBTW Assets</h1>
           </div>
         </header>
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start mb-8 space-y-4 sm:space-y-0">
           <Link href="/" className="inline-block px-4 py-2 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition duration-300">
             ← Home
           </Link>
           {!account ? (
             <button
               onClick={connectWallet}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
+              className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105 text-center"
             >
               Connect Wallet
             </button>
           ) : (
-            <div className="flex flex-col items-end space-y-2">
-              <div className="bg-indigo-800 rounded-lg p-2 flex items-center">
+            <div className="w-full sm:w-auto flex flex-col items-end space-y-2">
+              <div className="w-full flex justify-between items-center bg-indigo-800 rounded-lg p-2">
                 <span className="text-sm font-medium">{shortenAddress(account)}</span>
-              </div>
-              {isWrongNetwork ? (
-                <button
-                  onClick={switchNetwork}
-                  className="px-3 py-1 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600 transition duration-300 ease-in-out transform hover:scale-105"
-                >
-                  Switch to XAI
-                </button>
-              ) : (
                 <button
                   onClick={disconnectWallet}
-                  className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
+                  className="ml-2 p-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
+                  aria-label="Disconnect wallet"
                 >
-                  Disconnect
+                  <LogOut size={20} />
+                </button>
+              </div>
+              {isWrongNetwork && (
+                <button
+                  onClick={switchNetwork}
+                  className="w-full px-3 py-2 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600 transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Switch to XAI
                 </button>
               )}
             </div>
           )}
         </div>
+
+
 
         <div className="mb-4 space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
           <div className="w-full sm:w-1/2 lg:w-2/5 relative">
