@@ -313,7 +313,7 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
 
   const cardStyle = getCardStyle();
 
-return (
+  return (
     <div
       className={`rounded-lg overflow-hidden opacity-0 ${isLoaded ? 'animate-fade-in' : ''} cursor-pointer transition-all duration-300 hover:scale-105 ${cardStyle.glowEffect} ${cardStyle.animationClass || ''} group`}
       style={{ animationDelay: `${index * 50}ms` }}
@@ -351,6 +351,48 @@ return (
 
   const shortenAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+              const renderFiltersAndSearch = () => {
+    if (nfts.length === 0) return null;
+
+    return (
+        <div className="mb-4 space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="w-full sm:w-1/2 lg:w-2/5 relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span className="text-indigo-300 text-lg" aria-hidden="true">🔍</span>
+            </div>
+            <input
+              type="text"
+              placeholder="Search by name, rarity, or element"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full pl-10 pr-4 py-2 bg-indigo-800 text-white rounded placeholder-indigo-300 truncate"
+            />
+          </div>
+          <div className="flex flex-wrap gap-2 sm:w-1/2 lg:w-3/5 sm:justify-end">
+            <select
+              value={filters.rarity}
+              onChange={(e) => handleFilterChange('rarity', e.target.value)}
+              className="w-full sm:w-auto px-4 py-2 bg-indigo-800 text-white rounded"
+            >
+              <option value="">All Rarities</option>
+              <option value="Common">Common</option>
+              <option value="Legendary">Legendary</option>
+            </select>
+            <select
+              value={filters.element}
+              onChange={(e) => handleFilterChange('element', e.target.value)}
+              className="w-full sm:w-auto px-4 py-2 bg-indigo-800 text-white rounded"
+            >
+              <option value="">All Elements</option>
+              {ELEMENTS.map((element) => (
+                <option key={element} value={element}>{element}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+    );
   };
 
   return (
@@ -434,42 +476,8 @@ return (
             </button>
           )}
         </div>
-
-        <div className="mb-4 space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
-          <div className="w-full sm:w-1/2 lg:w-2/5 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-indigo-300 text-lg" aria-hidden="true">🔍</span>
-            </div>
-            <input
-              type="text"
-              placeholder="Search by name, rarity, or element"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full pl-10 pr-4 py-2 bg-indigo-800 text-white rounded placeholder-indigo-300 truncate"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2 sm:w-1/2 lg:w-3/5 sm:justify-end">
-            <select
-              value={filters.rarity}
-              onChange={(e) => handleFilterChange('rarity', e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 bg-indigo-800 text-white rounded"
-            >
-              <option value="">All Rarities</option>
-              <option value="Common">Common</option>
-              <option value="Legendary">Legendary</option>
-            </select>
-            <select
-              value={filters.element}
-              onChange={(e) => handleFilterChange('element', e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 bg-indigo-800 text-white rounded"
-            >
-              <option value="">All Elements</option>
-              {ELEMENTS.map((element) => (
-                <option key={element} value={element}>{element}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+        
+        {renderFiltersAndSearch()}
 
         {error && <p className="text-red-500 mt-2 mb-4">{error}</p>}
         
@@ -486,7 +494,7 @@ return (
             ))}
           </div>
         ) : (
-          <p className="text-center">No NFTs found matching your criteria.</p>
+          <p className="text-center">No NFTs found</p>
         )}
       </div>
     </div>
