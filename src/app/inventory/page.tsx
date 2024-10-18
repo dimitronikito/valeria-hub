@@ -10,7 +10,7 @@ import Web3Modal from 'web3modal';
 import { useRouter } from 'next/navigation';
 import { NFT, NFTAttribute } from '@/types/nft';
 import { useInventory } from '@/context/InventoryContext';
-import { LogOut } from 'lucide-react';
+import { XIcon } from 'lucide-react';
 
 const XAI_CHAIN_ID = 660279;
 
@@ -57,12 +57,14 @@ const InventoryPage: React.FC = () => {
   const [filters, setFilters] = useState<Filters>({ rarity: '', element: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredNFTs, setFilteredNFTs] = useState<NFT[]>([]);
+  const [manualAddress, setManualAddress] = useState('');
+  const [isManualMode, setIsManualMode] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !web3Modal) {
       web3Modal = new Web3Modal({
         network: "xai",
-        cacheProvider: true,
+        cacheProvider: false,
         providerOptions
       });
     }
@@ -144,11 +146,11 @@ const InventoryPage: React.FC = () => {
     }
   }, [setNfts]);
 
-  useEffect(() => {
-    if (web3Modal && web3Modal.cachedProvider && nfts.length === 0) {
-      connectWallet();
-    }
-  }, [connectWallet, nfts.length]);
+  // useEffect(() => {
+  //   if (web3Modal && web3Modal.cachedProvider && nfts.length === 0) {
+  //     connectWallet();
+  //   }
+  // }, [connectWallet, nfts.length]);
 
   useEffect(() => {
     if (provider) {
@@ -186,6 +188,34 @@ const InventoryPage: React.FC = () => {
       };
     }
   }, [provider, disconnectWallet, fetchNFTs, setNfts]);
+
+  const handleManualAddressSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (ethers.isAddress(manualAddress)) {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const provider = new ethers.JsonRpcProvider("https://xai-chain.net/rpc");
+        await fetchNFTs(provider as any, manualAddress);
+        setAccount(manualAddress);
+        setIsManualMode(true);
+      } catch (err) {
+        console.error('Failed to fetch NFTs:', err);
+        setError('Failed to fetch NFTs. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setError('Invalid Ethereum address. Please enter a valid address.');
+    }
+  };
+
+  const resetManualMode = () => {
+    setIsManualMode(false);
+    setManualAddress('');
+    setAccount(null);
+    setNfts([]);
+  };
 
 useEffect(() => {
   const applyFilters = () => {
@@ -255,23 +285,23 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
     if (isUnique) {
       return {
         gradientBorder: 'bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-400',
-        glowEffect: 'shadow-[0_0_20px_8px_rgba(236,72,153,0.7)]',
+        glowEffect: 'shadow-[0_0_16px_4px_rgba(236,72,153,0.7)]',
         animationClass: 'animate-pulse'
       };
     } else if (rarity === 'Legendary' && isShiny) {
       return {
         gradientBorder: 'bg-gradient-to-r from-purple-600 via-red-500 to-yellow-400',
-        glowEffect: 'shadow-[0_0_7px_3px_rgba(236,72,153,0.7)]',
+        glowEffect: 'shadow-[0_0_4px_2px_rgba(236,72,153,0.7)]',
       };
     } else if (isShiny) {
       return {
         gradientBorder: 'bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500',
-        glowEffect: 'shadow-[0_0_7px_3px_rgba(252,211,77,0.5)]'
+        glowEffect: 'shadow-[0_0_4px_2px_rgba(252,211,77,0.5)]'
       };
     } else if (rarity === 'Legendary') {
       return {
         gradientBorder: 'bg-gradient-to-r from-purple-700 via-purple-600 to-red-500',
-        glowEffect: 'shadow-[0_0_10px_2px_rgba(126,34,206,0.4)]'
+        glowEffect: 'shadow-[0_0_8px_3px_rgba(126,34,206,0.4)]'
       };
     } else {
       return {
@@ -346,42 +376,64 @@ return (
             <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">LBTW Assets</h1>
           </div>
         </header>
-        <div className="flex flex-col sm:flex-row justify-between items-start mb-8 space-y-4 sm:space-y-0">
-          <Link href="/" className="inline-block px-4 py-2 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition duration-300">
-            ← Home
-          </Link>
-          {!account ? (
-            <button
-              onClick={connectWallet}
-              className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105 text-center"
-            >
-              Connect Wallet
-            </button>
-          ) : (
-            <div className="w-full sm:w-auto flex flex-col items-end space-y-2">
-              <div className="w-full flex justify-between items-center bg-indigo-800 rounded-lg p-2">
-                <span className="text-sm font-medium">{shortenAddress(account)}</span>
+        <div className="flex flex-col mb-8 space-y-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+            <Link href="/" className="inline-block px-4 py-2 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition duration-300">
+              ← Home
+            </Link>
+            
+            {!account && (
                 <button
-                  onClick={disconnectWallet}
-                  className="ml-2 p-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
-                  aria-label="Disconnect wallet"
+                  onClick={connectWallet}
+                  className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105 text-center"
                 >
-                  <LogOut size={20} />
-                </button>
-              </div>
-              {isWrongNetwork && (
-                <button
-                  onClick={switchNetwork}
-                  className="w-full px-3 py-2 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600 transition duration-300 ease-in-out transform hover:scale-105"
-                >
-                  Switch to XAI
+                  Connect Wallet
                 </button>
               )}
-            </div>
+            
+            {account && (
+              <div className="w-full sm:w-auto flex justify-between items-center bg-indigo-800 rounded-lg p-2">
+                <span className="text-sm font-medium">{shortenAddress(account)}</span>
+                <button
+                  onClick={isManualMode ? resetManualMode : disconnectWallet}
+                  className="ml-2 p-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
+                  aria-label={isManualMode ? "Reset" : "Disconnect wallet"}
+                >
+                  <XIcon size={20} />
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {!account && (
+            <>              
+              <form onSubmit={handleManualAddressSubmit} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <input
+                  type="text"
+                  value={manualAddress}
+                  onChange={(e) => setManualAddress(e.target.value)}
+                  placeholder="Or enter a wallet address..."
+                  className="w-full sm:flex-grow px-4 py-2 bg-indigo-800 text-white rounded sm:rounded-l placeholder-indigo-300"
+                />
+                <button
+                  type="submit"
+                  className="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded sm:rounded-r hover:bg-green-600 transition duration-300 ease-in-out"
+                >
+                  View
+                </button>
+              </form>
+            </>
+          )}
+          
+          {!isManualMode && isWrongNetwork && (
+            <button
+              onClick={switchNetwork}
+              className="w-full px-3 py-2 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600 transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Switch to XAI
+            </button>
           )}
         </div>
-
-
 
         <div className="mb-4 space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
           <div className="w-full sm:w-1/2 lg:w-2/5 relative">

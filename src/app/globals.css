@@ -98,7 +98,7 @@ body {
   background-size: 200% 100%;
   animation: shimmer 3s linear infinite;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.7s ease;
   pointer-events: none;
 }
 
