@@ -479,7 +479,7 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
         
         {renderFiltersAndSearch()}
 
-        {error && <p className="text-red-500 mt-2 mb-4">{error}</p>}
+        {/* {error && <p className="text-red-500 mt-2 mb-4">{error}</p>} */}
         
         {isLoading ? (
           <p className="text-center">Loading your assets...</p>

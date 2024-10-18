@@ -122,8 +122,8 @@ const FlappyBirbGame: React.FC<{
           this.bird.setScale(0.03);
           
           // Adjust the bird's body to be smaller than its visual size for more forgiving collisions
-          const birdWidth = this.bird.width * 0.6;
-          const birdHeight = this.bird.height * 0.6;
+          const birdWidth = this.bird.width * 0.55;
+          const birdHeight = this.bird.height * 0.55;
           this.bird.body.setSize(birdWidth, birdHeight);
           this.bird.body.setOffset((this.bird.width - birdWidth) / 2, (this.bird.height - birdHeight) / 2);
 
@@ -225,22 +225,22 @@ const FlappyBirbGame: React.FC<{
           if (this.gameOver) return;
 
           const gapSize = 180;
-          const minTopPipe = 50;
-          const maxTopPipe = BASE_HEIGHT - gapSize - 50;
+          const minTopPipe = 45;
+          const maxTopPipe = BASE_HEIGHT - gapSize - 45;
           const topPipeHeight = Phaser.Math.Between(minTopPipe, maxTopPipe);
 
           const pipeTop = this.pipes.create(BASE_WIDTH, topPipeHeight, 'pipeTexture') as Phaser.Physics.Arcade.Sprite;
           pipeTop.setOrigin(0.5, 1);
           pipeTop.setImmovable(true);
           (pipeTop.body as Phaser.Physics.Arcade.Body).allowGravity = false;
-          pipeTop.setVelocityX(-150);
+          pipeTop.setVelocityX(-160);
           pipeTop.setScale(1, topPipeHeight / 32);
 
           const pipeBottom = this.pipes.create(BASE_WIDTH, topPipeHeight + gapSize, 'pipeTexture') as Phaser.Physics.Arcade.Sprite;
           pipeBottom.setOrigin(0.5, 0);
           pipeBottom.setImmovable(true);
           (pipeBottom.body as Phaser.Physics.Arcade.Body).allowGravity = false;
-          pipeBottom.setVelocityX(-150);
+          pipeBottom.setVelocityX(-160);
           pipeBottom.setScale(1, (BASE_HEIGHT - topPipeHeight - gapSize) / 32);
 
           this.score += 1;
@@ -279,7 +279,7 @@ const FlappyBirbGame: React.FC<{
         physics: {
           default: 'arcade',
           arcade: {
-            gravity: { x: 0, y: 370 },
+            gravity: { x: 0, y: 360 },
             debug: false
           }
         },

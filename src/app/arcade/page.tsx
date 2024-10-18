@@ -31,20 +31,20 @@ const ArcadePage = () => {
               </div>
             </div>
           </Link>
-          <Link href="/arcade/minigame" passHref>
+          {/* <Link href="/arcade/dash" passHref>
             <div className="bg-indigo-800 p-4 rounded-lg shadow-md border-2 border-indigo-600 cursor-pointer hover:bg-indigo-700 transition-all duration-300">
               <h2 className="text-sm sm:text-base font-bold leading-tight uppercase text-center mb-2 text-yellow-400">
-                Mini Battle
+                Dash
               </h2>
               <div className="relative w-full pb-[100%] border-2 border-indigo-400">
                 <img
                   src="/mini_battle.png"
-                  alt="Kuuko"
+                  alt="Elemental Matcher"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
             </div>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>
