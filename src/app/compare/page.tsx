@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image'
 import { valerians, Valerian } from '@/data/valerians';
+import ElementIcon from '@/components/ElementIcons';
 
 export default function ComparePage() {
   const [selectedClass, setSelectedClass] = useState<string>('');
@@ -44,7 +45,12 @@ export default function ComparePage() {
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
           />
         </div>
-        <p className="text-xs sm:text-sm uppercase text-center mb-2">{valerian.type}</p>
+        <div className="mb-4 flex items-center justify-center space-x-2">          
+          <ElementIcon type={valerian.type}/>
+          <p className="text-[10px] uppercase truncate flex items-center">
+            <span className="text-gray-300 mr-1">{valerian.class}</span>
+          </p>
+        </div>
         <div className="w-full space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-xs">HP</span>

@@ -7,25 +7,13 @@ import { motion } from 'framer-motion';
 import { Zap, Droplet, Mountain, Wind, Cog, Sparkles, Moon, Sun, Flame, Leaf, ThumbsUp, ThumbsDown } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { NFT } from '@/types/nft';
+import ElementIcon from '@/components/ElementIcons'; 
 
 const PriceChart = dynamic(() => import('@/components/PriceChart'), { ssr: false });
 
 interface LbtwValerianDetailPageProps {
   nft: NFT;
 }
-
-const elementIcons: { [key: string]: React.ReactNode } = {
-  Fire: <Flame className="text-red-500" />,
-  Electric: <Zap className="text-yellow-400" />,
-  Water: <Droplet className="text-blue-500" />,
-  Grass: <Leaf className="text-green-500" />,
-  Rock: <Mountain className="text-gray-500" />,
-  Air: <Wind className="text-blue-300" />,
-  Metal: <Cog className="text-gray-400" />,
-  Pixie: <Sparkles className="text-pink-400" />,
-  Dark: <Moon className="text-purple-600" />,
-  Light: <Sun className="text-yellow-300" />
-};
 
 const LbtwValerianDetailPage: React.FC<LbtwValerianDetailPageProps> = ({ nft }) => {
   const [rating, setRating] = useState<'up' | 'down' | null>(null);
@@ -124,7 +112,7 @@ const LbtwValerianDetailPage: React.FC<LbtwValerianDetailPageProps> = ({ nft }) 
                       </div>
                       <div className="flex flex-row">
                         <p className="text-yellow-300 text-base mr-2 sm:text-lg">{attr.value}</p>
-                        {elementIcons[attr.value] || null}
+                        <ElementIcon type={attr.value} />
                       </div>
                     </motion.div>
                   ))}

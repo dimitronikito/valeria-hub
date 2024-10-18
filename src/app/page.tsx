@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import ElementIcon from '@/components/ElementIcons';
 import { valerians, Valerian } from '@/data/valerians';
 
 const ValeriaHub: React.FC = () => {
@@ -61,7 +62,12 @@ const ValeriaHub: React.FC = () => {
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
             />
           </div>
-          <p className="mt-2 text-[8px] sm:text-[10px] md:text-xs uppercase text-center truncate" title={`${valerian.type} ${valerian.class}`}>{valerian.type} {valerian.class}</p>
+        <div className="mt-2 flex items-center justify-center space-x-2">          
+          <ElementIcon type={valerian.type}/>
+          <p className="text-[10px] uppercase truncate flex items-center">
+            <span className="text-gray-200 mr-1">{valerian.class}</span>
+          </p>
+        </div>
         </div>
       </Link>
     );

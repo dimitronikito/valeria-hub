@@ -154,7 +154,7 @@ export const valerians: Valerian[] = [
   {
     id: 13,
     name: 'Drillpod',
-    type: 'Earth',
+    type: 'Rock',
     class: 'Tank',
     stars: 1,
     passive: 'Activation',
@@ -165,7 +165,7 @@ export const valerians: Valerian[] = [
   {
     id: 14,
     name: 'Armordrillo',
-    type: 'Earth',
+    type: 'Rock',
     class: 'Tank',
     stars: 2,
     passive: 'Activation',
@@ -176,7 +176,7 @@ export const valerians: Valerian[] = [
   {
     id: 15,
     name: 'Tridrillatops',
-    type: 'Earth',
+    type: 'Rock',
     class: 'Tank',
     stars: 3,
     passive: 'Activation',
@@ -418,7 +418,7 @@ export const valerians: Valerian[] = [
   {
     id: 37,
     name: 'Jitters',
-    type: 'Wind',
+    type: 'Air',
     class: 'Ranger',
     stars: 1,
     passive: 'Laceration',
@@ -429,7 +429,7 @@ export const valerians: Valerian[] = [
   {
     id: 38,
     name: 'Clemenfly',
-    type: 'Wind',
+    type: 'Air',
     class: 'Ranger',
     stars: 2,
     passive: 'Laceration',
@@ -440,7 +440,7 @@ export const valerians: Valerian[] = [
   {
     id: 39,
     name: 'Clemenqueen',
-    type: 'Wind',
+    type: 'Air',
     class: 'Ranger',
     stars: 3,
     passive: 'Laceration',
@@ -451,7 +451,7 @@ export const valerians: Valerian[] = [
   {
     id: 40,
     name: 'Poptoid',
-    type: 'Fairy',
+    type: 'Pixie',
     class: 'Support',
     stars: 1,
     passive: 'Life Source',
@@ -462,7 +462,7 @@ export const valerians: Valerian[] = [
   {
     id: 41,
     name: 'Fillytoid',
-    type: 'Fairy',
+    type: 'Pixie',
     class: 'Support',
     stars: 2,
     passive: 'Life Source',
@@ -473,7 +473,7 @@ export const valerians: Valerian[] = [
   {
     id: 42,
     name: 'Eternatoid',
-    type: 'Fairy',
+    type: 'Pixie',
     class: 'Support',
     stars: 3,
     passive: 'Life Source',
@@ -484,7 +484,7 @@ export const valerians: Valerian[] = [
   {
     id: 43,
     name: 'Iggy',
-    type: 'Steel',
+    type: 'Metal',
     class: 'Warrior',
     stars: 1,
     passive: 'Internal Injury',
@@ -495,7 +495,7 @@ export const valerians: Valerian[] = [
   {
     id: 44,
     name: 'Drazil',
-    type: 'Steel',
+    type: 'Metal',
     class: 'Warrior',
     stars: 2,
     passive: 'Internal Injury',
@@ -506,7 +506,7 @@ export const valerians: Valerian[] = [
   {
     id: 45,
     name: 'Overlordz',
-    type: 'Steel',
+    type: 'Metal',
     class: 'Warrior',
     stars: 3,
     passive: 'Internal Injury',
@@ -517,7 +517,7 @@ export const valerians: Valerian[] = [
   {
     id: 46,
     name: 'Scout',
-    type: 'Earth',
+    type: 'Rock',
     class: 'Warrior',
     stars: 1,
     passive: 'Torn Tendons',
@@ -528,7 +528,7 @@ export const valerians: Valerian[] = [
   {
     id: 47,
     name: 'Crash',
-    type: 'Earth',
+    type: 'Rock',
     class: 'Warrior',
     stars: 2,
     passive: 'Torn Tendons',
@@ -539,7 +539,7 @@ export const valerians: Valerian[] = [
   {
     id: 48,
     name: 'Rampage',
-    type: 'Earth',
+    type: 'Rock',
     class: 'Warrior',
     stars: 3,
     passive: 'Torn Tendons',
@@ -550,7 +550,7 @@ export const valerians: Valerian[] = [
   {
     id: 49,
     name: 'Ooga',
-    type: 'Steel',
+    type: 'Metal',
     class: 'Tank',
     stars: 1,
     passive: 'Thorny hairs',
@@ -561,7 +561,7 @@ export const valerians: Valerian[] = [
   {
     id: 50,
     name: 'Babooga',
-    type: 'Steel',
+    type: 'Metal',
     class: 'Tank',
     stars: 2,
     passive: 'Thorny hairs',
@@ -572,7 +572,7 @@ export const valerians: Valerian[] = [
   {
     id: 51,
     name: 'Gorooga',
-    type: 'Steel',
+    type: 'Metal',
     class: 'Tank',
     stars: 3,
     passive: 'Thorny hairs',
@@ -715,7 +715,7 @@ export const valerians: Valerian[] = [
   {
     id: 64,
     name: 'Dardanos',
-    type: 'Earth',
+    type: 'Rock',
     class: 'Ranger',
     stars: 4,
     passive: 'Spirit of Earth',
@@ -726,7 +726,7 @@ export const valerians: Valerian[] = [
   {
     id: 65,
     name: 'Shrapnel',
-    type: 'Steel',
+    type: 'Metal',
     class: 'Ranger',
     stars: 4,
     passive: 'Spirit of Steel',
@@ -748,7 +748,7 @@ export const valerians: Valerian[] = [
   {
     id: 67,
     name: 'Gryphora',
-    type: 'Wind',
+    type: 'Air',
     class: 'Mage',
     stars: 4,
     passive: 'Spirit of Wind',
@@ -759,10 +759,10 @@ export const valerians: Valerian[] = [
   {
     id: 68,
     name: 'Lirio',
-    type: 'Fairy',
+    type: 'Pixie',
     class: 'Mage',
     stars: 4,
-    passive: 'Spirit of Fairy',
+    passive: 'Spirit of Pixie',
     passiveDescription: "While on the field, increase all fairy-attribute damage dealt by allied valerians",
     image: '/valerians/lirio.png',
     stats: { hp: 100, attack: 100, speed: 80, defense: 100, magicDefense: 100 }
