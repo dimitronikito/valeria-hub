@@ -120,18 +120,18 @@ const ValerianCommentSection: React.FC<ValerianCommentSectionProps> = ({ valeria
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
           placeholder="Your Name"
-          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base"
+          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base font-sans"
           required
         />
         <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Add a comment..."
-          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base"
+          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base font-sans"
           rows={3}
           required
         />
-       <div className="flex justify-end"> {/* New container for button alignment */}
+        <div className="flex justify-end">
           <motion.button
             type="submit"
             className="bg-indigo-700 hover:bg-indigo-600 text-yellow-400 font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base"
@@ -152,11 +152,11 @@ const ValerianCommentSection: React.FC<ValerianCommentSectionProps> = ({ valeria
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1 sm:mb-2">
-              <p className="font-bold text-base sm:text-lg text-yellow-400">{comment.userName}</p>
-              <p className="text-xs text-indigo-400">{formatRelativeTime(comment.createdAt)}</p>
+            <div className="flex flex-row items-center justify-between">
+              <p className="text-xs text-yellow-400">{comment.userName}</p>
+              <p className="text-xs text-indigo-400 font-sans">{formatRelativeTime(comment.createdAt)}</p>
             </div>
-            <p className="mt-1 text-sm sm:text-base text-white">{comment.text}</p>
+            <p className="mt-1 text-sm sm:text-base text-white font-sans">{comment.text}</p>
           </motion.div>
         ))}
         {isLoading && <LoadingSpinner />}
