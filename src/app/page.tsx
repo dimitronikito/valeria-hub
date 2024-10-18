@@ -52,12 +52,12 @@ const ValeriaHub: React.FC = () => {
               ))}
             </div>
           </div>
-          <div className="relative w-full pb-[100%] border-2 border-indigo-400">
+          <div className="relative w-full pb-[100%] border-2 border-indigo-400 rounded-lg">
             <Image
               src={valerian.image}
               alt={valerian.name}
-              layout="fill"
-              objectFit="cover"
+              fill
+              className={"object-cover rounded-lg"}
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
             />
           </div>

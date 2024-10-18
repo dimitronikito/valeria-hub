@@ -27,50 +27,53 @@ export default function ComparePage() {
   );
 
   const ValerianCard: React.FC<{ valerian: Valerian }> = React.memo(({ valerian }) => (
-    <div className="bg-indigo-800 p-4 rounded-lg shadow-md border-2 border-indigo-600 flex flex-col items-center">
-      <h2 className="text-sm sm:text-base font-bold leading-tight uppercase text-center mb-2">{valerian.name}</h2>
-      <div className="flex justify-center items-center mb-2">
-        {[...Array(valerian.stars)].map((_, index) => (
-          <span key={index} className="text-yellow-400 text-xs sm:text-sm">★</span>
-        ))}
+    <Link href={`/valerian/${encodeURIComponent(valerian.name)}`} passHref>
+      <div className="bg-indigo-800 p-4 rounded-lg shadow-md border-2 border-indigo-600 flex flex-col items-center cursor-pointer hover:bg-indigo-700 transition-colors">
+        <h2 className="text-sm sm:text-base font-bold leading-tight uppercase text-center mb-2">{valerian.name}</h2>
+        <div className="flex justify-center items-center mb-2">
+          {[...Array(valerian.stars)].map((_, index) => (
+            <span key={index} className="text-yellow-400 text-xs sm:text-sm">★</span>
+          ))}
+        </div>
+        <div className="relative w-24 h-24 sm:w-32 sm:h-32 border-2 border-indigo-400 mb-2 rounded-lg">
+          <Image
+            src={valerian.image}
+            alt={valerian.name}
+            fill
+            className="object-cover rounded-lg"
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+          />
+        </div>
+        <p className="text-xs sm:text-sm uppercase text-center mb-2">{valerian.type}</p>
+        <div className="w-full space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-xs">HP</span>
+            <span className="text-xs">{valerian.stats.hp}</span>
+          </div>
+          <StatBar value={valerian.stats.hp} max={250} color="bg-green-600" />
+          <div className="flex justify-between items-center">
+            <span className="text-xs">Attack</span>
+            <span className="text-xs">{valerian.stats.attack}</span>
+          </div>
+          <StatBar value={valerian.stats.attack} max={200} color="bg-red-600" />
+          <div className="flex justify-between items-center">
+            <span className="text-xs">Speed</span>
+            <span className="text-xs">{valerian.stats.speed}</span>
+          </div>
+          <StatBar value={valerian.stats.speed} max={150} color="bg-blue-600" />
+          <div className="flex justify-between items-center">
+            <span className="text-xs">Defense</span>
+            <span className="text-xs">{valerian.stats.defense}</span>
+          </div>
+          <StatBar value={valerian.stats.defense} max={150} color="bg-yellow-600" />
+          <div className="flex justify-between items-center">
+            <span className="text-xs">M. Def</span>
+            <span className="text-xs">{valerian.stats.magicDefense}</span>
+          </div>
+          <StatBar value={valerian.stats.magicDefense} max={150} color="bg-purple-600" />
+        </div>
       </div>
-      <div className="relative w-24 h-24 sm:w-32 sm:h-32 border-2 border-indigo-400 mb-2">
-        <Image
-          src={valerian.image}
-          alt={valerian.name}
-          layout="fill"
-          objectFit="cover"
-        />
-      </div>
-      <p className="text-xs sm:text-sm uppercase text-center mb-2">{valerian.type}</p>
-      <div className="w-full space-y-2">
-        <div className="flex justify-between items-center">
-          <span className="text-xs">HP</span>
-          <span className="text-xs">{valerian.stats.hp}</span>
-        </div>
-        <StatBar value={valerian.stats.hp} max={250} color="bg-green-600" />
-        <div className="flex justify-between items-center">
-          <span className="text-xs">Attack</span>
-          <span className="text-xs">{valerian.stats.attack}</span>
-        </div>
-        <StatBar value={valerian.stats.attack} max={200} color="bg-red-600" />
-        <div className="flex justify-between items-center">
-          <span className="text-xs">Speed</span>
-          <span className="text-xs">{valerian.stats.speed}</span>
-        </div>
-        <StatBar value={valerian.stats.speed} max={150} color="bg-blue-600" />
-        <div className="flex justify-between items-center">
-          <span className="text-xs">Defense</span>
-          <span className="text-xs">{valerian.stats.defense}</span>
-        </div>
-        <StatBar value={valerian.stats.defense} max={150} color="bg-yellow-600" />
-        <div className="flex justify-between items-center">
-          <span className="text-xs">M. Def</span>
-          <span className="text-xs">{valerian.stats.magicDefense}</span>
-        </div>
-        <StatBar value={valerian.stats.magicDefense} max={150} color="bg-purple-600" />
-      </div>
-    </div>
+    </Link>
   ));
 
   const EmptyState: React.FC = () => (

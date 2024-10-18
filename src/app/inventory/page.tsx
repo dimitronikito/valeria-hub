@@ -422,7 +422,7 @@ return (
         {error && <p className="text-red-500 mt-2 mb-4">{error}</p>}
         
         {isLoading ? (
-          <p className="text-center">Loading your NFTs...</p>
+          <p className="text-center">Loading your assets...</p>
         ) : isWrongNetwork ? (
           <p className="text-center text-yellow-400">Please switch to the XAI network to view your NFTs.</p>
         ) : filteredNFTs.length > 0 ? (

@@ -155,13 +155,13 @@ const ValerianBattleSimulator: React.FC = () => {
         <CardTitle className="text-sm font-bold text-center">{valerian.name}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="relative w-16 h-16 mx-auto mb-2 border-2 border-indigo-400">
+        <div className="relative w-16 h-16 mx-auto mb-2 border-2 border-indigo-400 rounded-lg">
         <Image
           src={valerian.image}
           alt={valerian.name}
-          layout="fill"
-          objectFit="cover"
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="absolute inset-0 w-full h-full object-cover rounded-lg"
+          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
         />
         </div>
         <p className="text-xs text-center mb-2">{valerian.type} {valerian.class}</p>

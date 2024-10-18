@@ -90,10 +90,10 @@ const LbtwValerianDetailPage: React.FC<LbtwValerianDetailPageProps> = ({ nft }) 
                   className="relative w-full pb-[133.33%]"
                 >
                   <Image 
+                    priority
                     src={nft.metadata?.image || '/placeholder-image.png'} 
                     alt={nft.metadata?.name || 'NFT'} 
-                    layout="fill"
-                    objectFit="contain"
+                    fill               
                     className="rounded-lg"
                   />
                 </motion.div>
