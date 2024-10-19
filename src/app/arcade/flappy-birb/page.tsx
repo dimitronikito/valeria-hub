@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, getDocs, where, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { SHA256 } from 'crypto-js';
 
 const FlappyBirbGame = dynamic(() => import('./FlappyBirbGame'), { 
   ssr: false,

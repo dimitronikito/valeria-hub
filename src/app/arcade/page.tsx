@@ -31,20 +31,20 @@ const ArcadePage = () => {
               </div>
             </div>
           </Link>
-          {/* <Link href="/arcade/dash" passHref>
+         <Link href="/arcade/breeding-altar" passHref>
             <div className="bg-indigo-800 p-4 rounded-lg shadow-md border-2 border-indigo-600 cursor-pointer hover:bg-indigo-700 transition-all duration-300">
               <h2 className="text-sm sm:text-base font-bold leading-tight uppercase text-center mb-2 text-yellow-400">
-                Dash
+                Breeding Altar
               </h2>
               <div className="relative w-full pb-[100%] border-2 border-indigo-400">
                 <img
-                  src="/mini_battle.png"
-                  alt="Elemental Matcher"
+                  src="/breeding_altar.jpg"
+                  alt="Breeding Altar"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
             </div>
-          </Link> */}
+          </Link>
         </div>
       </div>
     </div>
