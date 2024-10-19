@@ -5,13 +5,11 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import type { WheelData } from 'react-custom-roulette/dist/components/Wheel/types';
 
-// Dynamically import the Wheel component with ssr: false
 const Wheel = dynamic<React.ComponentProps<typeof import('react-custom-roulette')['Wheel']>>(
   () => import('react-custom-roulette').then((mod) => mod.Wheel),
   { ssr: false }
 );
 
-// Create a wrapper component for the Wheel with proper typing
 const ClientOnlyWheel: React.FC<React.ComponentProps<typeof Wheel>> = (props) => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -20,7 +18,11 @@ const ClientOnlyWheel: React.FC<React.ComponentProps<typeof Wheel>> = (props) =>
   }, []);
 
   if (!isMounted) {
-    return null;
+    return (
+      <div className="flex justify-center items-center h-[400px] w-[400px]">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-yellow-400"></div>
+      </div>
+    );
   }
 
   return <Wheel {...props} />;
@@ -30,15 +32,20 @@ const BreedingAltar: React.FC = () => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [result, setResult] = useState<number | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const data: WheelData[] = [
-    { option: '1x', style: { backgroundColor: '#8000A9', textColor: '#ffffff' } },
+    { option: '1x', style: { backgroundColor: '#8000BA', textColor: '#ffffff' } },
     { option: '2x', style: { backgroundColor: '#87CEEB', textColor: '#ffffff' } },
-    { option: '3x', style: { backgroundColor: '#8000A9', textColor: '#ffffff' } },
+    { option: '3x', style: { backgroundColor: '#8000BA', textColor: '#ffffff' } },
     { option: '4x', style: { backgroundColor: '#87CEEB', textColor: '#ffffff' } },
-    { option: '5x', style: { backgroundColor: '#8000A9', textColor: '#ffffff' } },
+    { option: '5x', style: { backgroundColor: '#8000BA', textColor: '#ffffff' } },
     { option: '6x', style: { backgroundColor: '#87CEEB', textColor: '#ffffff' } },
-    { option: '8x', style: { backgroundColor: '#8000A9', textColor: '#ffffff' } },
+    { option: '8x', style: { backgroundColor: '#8000BA', textColor: '#ffffff' } },
     { option: '10x', style: { backgroundColor: '#87CEEB', textColor: '#ffffff' } },
   ];
 
@@ -89,42 +96,44 @@ const BreedingAltar: React.FC = () => {
         <Link href="/arcade" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
           ← Arcade
         </Link>
-        <div className="flex flex-col items-center">
-          <div className="mb-8 relative">
-            <div className="absolute inset-0 flex items-center justify-center z-10">
-              <img src="/valerians/kuuko_no_bg.png" alt="Kuuko" className="w-1/4 h-1/4 object-contain" />
-            </div>
-            <ClientOnlyWheel
-              mustStartSpinning={mustSpin}
-              prizeNumber={prizeNumber}
-              data={data}
-              backgroundColors={['#87CEEB', '#800080']}
-              textColors={['#ffffff']}
-              innerRadius={25}
-              radiusLineColor={"transparent"}
-              radiusLineWidth={0}
-              fontSize={28}
-              perpendicularText={true}
-              textDistance={80}
-              fontWeight={"normal"}
-              pointerProps={{
-                style: {
-                  filter: 'brightness(0) saturate(90%) invert(91%) sepia(50%) saturate(1013%) hue-rotate(329deg) brightness(103%) contrast(101%)'
-                }
-              }}
-              onStopSpinning={() => {
-                setMustSpin(false);
-                setResult(prizeNumber + 1);
-              }}
-            />
+      <div className="flex flex-col items-center">
+        <div className="mb-8 relative">
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <img src="/valerians/kuuko_no_bg.png" alt="Kuuko" className="w-1/4 h-1/4 object-contain" />
           </div>
-          <button
-            onClick={handleSpinClick}
-            disabled={mustSpin}
-            className="px-8 py-4 bg-indigo-700 text-yellow-400 rounded-full font-bold text-xl hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-          >
-            {mustSpin ? 'Spinning...' : 'Spin'}
-          </button>
+          <ClientOnlyWheel
+            mustStartSpinning={mustSpin}
+            prizeNumber={prizeNumber}
+            data={data}
+            backgroundColors={['#87CEEB', '#8000BA']}
+            textColors={['#ffffff']}
+            innerRadius={25}
+            radiusLineColor={"transparent"}
+            radiusLineWidth={0}
+            fontSize={28}
+            perpendicularText={true}
+            textDistance={80}
+            fontWeight={"normal"}
+            pointerProps={{
+              style: {
+                filter: 'brightness(0) saturate(90%) invert(91%) sepia(50%) saturate(1013%) hue-rotate(329deg) brightness(103%) contrast(101%)'
+              }
+            }}
+            onStopSpinning={() => {
+              setMustSpin(false);
+              setResult(prizeNumber + 1);
+            }}
+          />
+          </div>
+          {isMounted && (
+            <button
+              onClick={handleSpinClick}
+              disabled={mustSpin}
+              className="px-8 py-4 bg-indigo-700 text-yellow-400 rounded-full font-bold text-xl hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            >
+              {mustSpin ? 'Spinning...' : 'Spin'}
+            </button>
+          )}
           {result !== null && (
             <div className="mt-6 text-center">
               <div className="text-2xl font-bold text-yellow-400 mb-4">
