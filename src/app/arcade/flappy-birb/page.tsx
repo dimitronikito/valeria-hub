@@ -114,7 +114,7 @@ const handleSubmitScore = async (e: React.FormEvent) => {
         <header className="bg-indigo-900 py-4 mb-4">
           <div className="container mx-auto max-w-6xl px-4">
             <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">
-              Flappy Birb
+              Flappy Sheep
             </h1>
           </div>
         </header>

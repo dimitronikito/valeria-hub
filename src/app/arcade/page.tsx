@@ -20,12 +20,12 @@ const ArcadePage = () => {
           <Link href="/arcade/flappy-birb" passHref>
             <div className="bg-indigo-800 p-4 rounded-lg shadow-md border-2 border-indigo-600 cursor-pointer hover:bg-indigo-700 transition-all duration-300">
               <h2 className="text-sm sm:text-base font-bold leading-tight uppercase text-center mb-2 text-yellow-400">
-                Flappy Birb
+                Flappy Sheep
               </h2>
               <div className="relative w-full pb-[100%] border-2 border-indigo-400">
                 <img
                   src="/flappy_birb.png"
-                  alt="Flappy Birb"
+                  alt="Flappy Sheep"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
