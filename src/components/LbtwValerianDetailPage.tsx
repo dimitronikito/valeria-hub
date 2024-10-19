@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Zap, Droplet, Mountain, Wind, Cog, Sparkles, Moon, Sun, Flame, Leaf, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { NFT } from '@/types/nft';
 import ElementIcon from '@/components/ElementIcons'; 

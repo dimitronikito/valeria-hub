@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import LbtwValerianDetailPage from '@/components/LbtwValerianDetailPage';
 import LbtwValerianDetailSkeleton from '@/components/LbtwValerianDetailSkeleton';
 import { NFT } from '@/types/nft';
+import { useRouter } from 'next/router';
 
 interface PageProps {
   params: {
