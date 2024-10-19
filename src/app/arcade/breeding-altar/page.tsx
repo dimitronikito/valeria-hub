@@ -71,15 +71,26 @@ const BreedingAltar: React.FC = () => {
     }
   };
 
-  const getResultMessage = (result: number) => {
-    if (result >= 4) {
-      return "Nice... too bad it's the fake wheel";
-    } else if (result <= 2) {
-      return "Get the bad spins out now..."
+const getResultMessage = (result: number): string => {
+    const optionString = data[result - 1]?.option;
+    if (!optionString) {
+      console.error('Invalid result:', result);
+      return 'An error occurred';
+    }
+    const multiplier = parseInt(optionString);
+    if (isNaN(multiplier)) {
+      console.error('Invalid multiplier:', optionString);
+      return 'An error occurred';
+    }
+    if (multiplier >= 4) {
+      return `${multiplier}x! Too bad it's the fake wheel...`;
+    } else if (multiplier <= 2) {
+      return `${multiplier}x... Get the bad spins out now...`;
     } else {
-      return `You won: ${result}x 🥱`;
+      return `You won: ${multiplier}x 🥱`;
     }
   };
+
 
   return (
     <div className="min-h-screen bg-indigo-950 text-white">
@@ -140,18 +151,24 @@ const BreedingAltar: React.FC = () => {
                 {getResultMessage(result)}
               </div>
               <div className="flex flex-wrap justify-center gap-2">
-                {[...Array(result)].map((_, index) => (
-                  <img 
-                    key={index}
-                    src="/valerians/kuuko_no_bg.png" 
-                    alt="Kuuko" 
-                    className="w-16 h-16 object-contain animate-bounce"
-                    style={{
-                      animationDelay: `${index * 0.1}s`,
-                      animationDuration: '1s',
-                    }}
-                  />
-                ))}
+                {(() => {
+                  const optionString = data[result - 1]?.option;
+                  if (!optionString) return null;
+                  const multiplier = parseInt(optionString);
+                  if (isNaN(multiplier)) return null;
+                  return [...Array(multiplier)].map((_, index) => (
+                    <img 
+                      key={index}
+                      src="/valerians/kuuko_no_bg.png" 
+                      alt="Kuuko" 
+                      className="w-16 h-16 object-contain animate-bounce"
+                      style={{
+                        animationDelay: `${index * 0.1}s`,
+                        animationDuration: '1s',
+                      }}
+                    />
+                  ));
+                })()}
               </div>
             </div>
           )}
