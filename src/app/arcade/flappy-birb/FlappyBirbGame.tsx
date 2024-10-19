@@ -279,7 +279,7 @@ const FlappyBirbGame: React.FC<{
         physics: {
           default: 'arcade',
           arcade: {
-            gravity: { x: 0, y: 340 },
+            gravity: { x: 0, y: 330 },
             debug: false
           }
         },
