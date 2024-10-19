@@ -24,7 +24,7 @@ const StatBar: React.FC<StatBarProps> = ({ label, value, max, color }) => (
         style={{ width: `${(value / max) * 100}%` }}
       ></div>
     </div>
-    <span className="text-xs sm:text-sm w-8 text-right">{value}</span>
+    <span className="text-xs sm:text-sm w-10 sm:w-12 text-right">{value}</span>
   </div>
 );
 
