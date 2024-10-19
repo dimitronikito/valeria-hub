@@ -16,7 +16,7 @@ const ArcadePage = () => {
         <Link href="/" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
           ← Home
         </Link>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 mt-4 sm:mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 mt-4 sm:mt-8">
           <Link href="/arcade/flappy-birb" passHref>
             <div className="bg-indigo-800 p-4 rounded-lg shadow-md border-2 border-indigo-600 cursor-pointer hover:bg-indigo-700 transition-all duration-300">
               <h2 className="text-sm sm:text-base font-bold leading-tight uppercase text-center mb-2 text-yellow-400">
@@ -25,13 +25,13 @@ const ArcadePage = () => {
               <div className="relative w-full pb-[100%] border-2 border-indigo-400">
                 <img
                   src="/flappy_birb.png"
-                  alt="Nocturnix"
+                  alt="Flappy Birb"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
             </div>
           </Link>
-         <Link href="/arcade/breeding-altar" passHref>
+          <Link href="/arcade/breeding-altar" passHref>
             <div className="bg-indigo-800 p-4 rounded-lg shadow-md border-2 border-indigo-600 cursor-pointer hover:bg-indigo-700 transition-all duration-300">
               <h2 className="text-sm sm:text-base font-bold leading-tight uppercase text-center mb-2 text-yellow-400">
                 Breeding Altar
@@ -45,6 +45,7 @@ const ArcadePage = () => {
               </div>
             </div>
           </Link>
+          {/* You can add more game links here */}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 "use client"
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { collection, addDoc, getDocs, Timestamp, orderBy, query, limit, startAfter, QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -120,21 +121,21 @@ const ValerianCommentSection: React.FC<ValerianCommentSectionProps> = ({ valeria
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
           placeholder="Your Name"
-          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base font-sans"
+          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base font-mono"
           required
         />
         <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Add a comment..."
-          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base font-sans"
+          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base font-mono"
           rows={3}
           required
         />
         <div className="flex justify-end">
           <motion.button
             type="submit"
-            className="bg-indigo-700 hover:bg-indigo-600 text-yellow-400 font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base"
+            className="bg-indigo-700 hover:bg-indigo-600 text-yellow-400 font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base font-mono"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -153,10 +154,10 @@ const ValerianCommentSection: React.FC<ValerianCommentSectionProps> = ({ valeria
             transition={{ duration: 0.3 }}
           >
             <div className="flex flex-row items-center justify-between">
-              <p className="text-xs text-yellow-400">{comment.userName}</p>
-              <p className="text-xs text-indigo-400 font-sans">{formatRelativeTime(comment.createdAt)}</p>
+              <p className="text-xs text-yellow-400 font-mono">{comment.userName}</p>
+              <p className="text-xs text-indigo-400 font-mono">{formatRelativeTime(comment.createdAt)}</p>
             </div>
-            <p className="mt-1 text-sm sm:text-base text-white font-sans">{comment.text}</p>
+            <p className="mt-1 text-sm sm:text-base text-white font-mono">{comment.text}</p>
           </motion.div>
         ))}
         {isLoading && <LoadingSpinner />}
