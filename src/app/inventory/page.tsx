@@ -494,7 +494,7 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
             ))}
           </div>
         ) : (
-          <p className="text-center">No NFTs found</p>
+          <p className="text-center">No LBTW assets found, connect or enter a wallet address or edit filters</p>
         )}
       </div>
     </div>
