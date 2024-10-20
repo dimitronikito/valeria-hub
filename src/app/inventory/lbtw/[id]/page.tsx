@@ -41,7 +41,7 @@ async function fetchNFTData(id: string, balance: number): Promise<NFT> {
 
 async function AssetDetail({ params, searchParams }: PageProps) {
   try {
-    const balance = parseInt(searchParams.balance || '1');
+    const balance = parseInt(searchParams.balance || 'N/A');
     const nft = await fetchNFTData(params.id, balance);
     return <LbtwValerianDetailPage nft={nft} />;
   } catch (error) {
