@@ -6,8 +6,8 @@ import { collection, addDoc, getDocs, getDoc, updateDoc, doc, Timestamp, orderBy
 import { db } from '@/lib/firebase';
 import { valerians, Valerian } from '@/data/valerians';
 import CommentSection from '@/components/CommentSection';
-import { CheckCircle, ThumbsUp, ThumbsDown, Plus, X, ArrowLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { CheckCircle, ThumbsUp, ThumbsDown, Plus, X, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link'
 
 const levelRanges = [
@@ -22,9 +22,22 @@ const TeamBuilder: React.FC = () => {
   const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
   const [creatingTeam, setCreatingTeam] = useState(false);
   const [currentLevelRange, setCurrentLevelRange] = useState<typeof levelRanges[0]>(levelRanges[0]);
+  const [expandedSections, setExpandedSections] = useState<Record<number, boolean>>({});
+  const [userVotes, setUserVotes] = useState<Record<string, 'upvote' | 'downvote'>>({});
 
   useEffect(() => {
     fetchTeams();
+    const initialExpandedState = levelRanges.reduce((acc, range) => {
+      acc[range.id] = true;
+      return acc;
+    }, {} as Record<number, boolean>);
+    setExpandedSections(initialExpandedState);
+
+    // Load user votes from local storage
+    const storedVotes = localStorage.getItem('userVotes');
+    if (storedVotes) {
+      setUserVotes(JSON.parse(storedVotes) as Record<string, 'upvote' | 'downvote'>);
+    }
   }, []);
 
   const fetchTeams = async () => {
@@ -83,22 +96,70 @@ const TeamBuilder: React.FC = () => {
   };
 
   const handleVote = async (teamId: string, isUpvote: boolean) => {
+    const currentVote = userVotes[teamId];
+    
+    if (currentVote === 'upvote' && isUpvote) return;
+    if (currentVote === 'downvote' && !isUpvote) return;
+
     const teamRef = doc(db, 'teams', teamId);
     const teamDoc = await getDoc(teamRef);
     
     if (teamDoc.exists()) {
-      const voteField = isUpvote ? 'upvotes' : 'downvotes';
-      const currentVotes = teamDoc.data()[voteField] || 0;
+      const upvoteField = 'upvotes';
+      const downvoteField = 'downvotes';
+      const currentUpvotes = teamDoc.data()[upvoteField] || 0;
+      const currentDownvotes = teamDoc.data()[downvoteField] || 0;
       
+      let updatedUpvotes = currentUpvotes;
+      let updatedDownvotes = currentDownvotes;
+
+      if (currentVote) {
+        // Remove previous vote
+        if (currentVote === 'upvote') updatedUpvotes--;
+        if (currentVote === 'downvote') updatedDownvotes--;
+      }
+
+      // Add new vote
+      if (isUpvote) updatedUpvotes++;
+      else updatedDownvotes++;
+
       await updateDoc(teamRef, {
-        [voteField]: currentVotes + 1,
+        [upvoteField]: updatedUpvotes,
+        [downvoteField]: updatedDownvotes,
       });
+
+      // Update local storage and state
+      const newUserVotes: Record<string, 'upvote' | 'downvote'> = { 
+        ...userVotes, 
+        [teamId]: isUpvote ? 'upvote' : 'downvote' 
+      };
+      setUserVotes(newUserVotes);
+      localStorage.setItem('userVotes', JSON.stringify(newUserVotes));
       
       fetchTeams();
     } else {
       console.error('Team document not found');
     }
   };
+
+  const toggleSection = (rangeId: number) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [rangeId]: !prev[rangeId]
+    }));
+  };
+
+  const BackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center mb-6"
+      onClick={onClick}
+    >
+      <ArrowLeft size={20} className="mr-2" />
+      {selectedTeam ? 'Team Builder' : 'Home'}
+    </motion.button>
+  );
 
   const ValerianSelector: React.FC = () => (
     <div className="mb-6">
@@ -189,150 +250,160 @@ const TeamBuilder: React.FC = () => {
     </div>
   );
 
-const TeamList: React.FC<{ levelRange: typeof levelRanges[0], onTeamSelect: (team: any) => void }> = ({ levelRange, onTeamSelect }) => {
-  const filteredTeams = teams
-    .filter(team => team.levelRange === levelRange.id)
-    .sort((a, b) => b.upvotes - a.upvotes);
+  const TeamList: React.FC<{ levelRange: typeof levelRanges[0], onTeamSelect: (team: any) => void }> = ({ levelRange, onTeamSelect }) => {
+    const filteredTeams = teams
+      .filter(team => team.levelRange === levelRange.id)
+      .sort((a, b) => b.upvotes - a.upvotes);
 
-  return (
-    <div className="space-y-4 md:space-y-6">
-      {filteredTeams.map((team, index) => (
-        <motion.div
-          key={team.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="bg-indigo-800 p-4 md:p-6 rounded-lg shadow-lg cursor-pointer"
-          onClick={() => onTeamSelect(team)}
+    return (
+      <div className="space-y-4 md:space-y-6">
+        {filteredTeams.map((team, index) => (
+          <motion.div
+            key={team.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="bg-indigo-800 p-4 md:p-6 rounded-lg shadow-lg cursor-pointer"
+            onClick={() => onTeamSelect(team)}
+          >
+            <div className="flex items-center">
+              <div className="flex flex-col items-center mr-4 md:mr-6">
+                <div className="text-yellow-400 font-bold text-lg md:text-xl pixel-font">
+                  #{index + 1}
+                </div>
+                <div className="flex items-center text-yellow-400 text-sm md:text-base mt-1">
+                  <ThumbsUp size={16} className="mr-1" />
+                  <span className="pixel-font">{team.upvotes}</span>
+                </div>
+              </div>
+              <div className="flex-1 flex justify-center space-x-2 md:space-x-4">
+                {team.valerians.map((valerianId: number) => {
+                  const valerian = valerians.find(v => v.id === valerianId);
+                  return valerian ? (
+                    <div key={valerian.id} className={`w-12 md:w-20 h-16 md:h-28 ${
+                      valerian.stars === 4 ? 'bg-purple-700' : 'bg-indigo-700'
+                    } rounded-lg p-1 md:p-2 flex flex-col items-center justify-between shadow-md`}>
+                      <div className="w-10 h-10 md:w-16 md:h-16 relative overflow-hidden rounded-full">
+                        <Image
+                          src={valerian.image}
+                          alt={valerian.name}
+                          layout="fill"
+                          objectFit="cover"
+                          sizes="(max-width: 768px) 40px, 64px"
+                          className="rounded-full"
+                        />
+                      </div>
+                      <p className="text-[8px] md:text-xs text-center mt-0.5 md:mt--1 w-full truncate font-semibold pixel-font">{valerian.name}</p>
+                </div>
+                  ) : null;
+                })}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
+  const SelectedTeamView: React.FC = () => (
+    <div className="bg-indigo-800 p-4 md:p-6 rounded-lg shadow-lg">
+      <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-6">
+        {selectedTeam.valerians.map((valerianId: number) => {
+          const valerian = valerians.find(v => v.id === valerianId);
+          return valerian ? (
+            <motion.div 
+              key={valerian.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`w-20 md:w-32 h-28 md:h-44 ${
+                valerian.stars === 4 ? 'bg-purple-700' : 'bg-indigo-700'
+              } rounded-lg p-2 md:p-4 flex flex-col items-center justify-between shadow-md`}
+            >
+              <div className="w-16 h-16 md:w-24 md:h-24 relative overflow-hidden rounded-full">
+                <Image
+                  src={valerian.image}
+                  alt={valerian.name}
+                  layout="fill"
+                  objectFit="cover"
+                  sizes="(max-width: 768px) 64px, 96px"
+                  className="rounded-full"
+                />
+              </div>
+              <p className="text-xs md:text-sm text-center mt-1 md:mt-2 w-full font-semibold truncate">{valerian.name}</p>
+            </motion.div>
+          ) : null;
+        })}
+      </div>
+      <div className="flex justify-center space-x-4 mb-6">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleVote(selectedTeam.id, true);
+          }}
+          className={`bg-green-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 ${
+            userVotes[selectedTeam.id] === 'upvote' ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={userVotes[selectedTeam.id] === 'upvote'}
         >
-          <div className="flex items-center">
-            <div className="flex flex-col items-center mr-4 md:mr-6">
-              <div className="text-yellow-400 font-bold text-lg md:text-xl pixel-font">
-                #{index + 1}
-              </div>
-              <div className="flex items-center text-yellow-400 text-sm md:text-base mt-1">
-                <ThumbsUp size={16} className="mr-1" />
-                <span className="pixel-font">{team.upvotes}</span>
-              </div>
-            </div>
-            <div className="flex-1 flex justify-center space-x-2 md:space-x-4">
-              {team.valerians.map((valerianId: number) => {
-                const valerian = valerians.find(v => v.id === valerianId);
-                return valerian ? (
-                  <div key={valerian.id} className={`w-12 md:w-20 h-16 md:h-28 ${
-                    valerian.stars === 4 ? 'bg-purple-700' : 'bg-indigo-700'
-                  } rounded-lg p-1 md:p-2 flex flex-col items-center justify-between shadow-md`}>
-                    <div className="w-10 h-10 md:w-16 md:h-16 relative overflow-hidden rounded-full">
-                      <Image
-                        src={valerian.image}
-                        alt={valerian.name}
-                        layout="fill"
-                        objectFit="cover"
-                        sizes="(max-width: 768px) 40px, 64px"
-                        className="rounded-full"
-                      />
-                    </div>
-                    <p className="text-[8px] md:text-xs text-center mt-0.5 md:mt-1 w-full truncate font-semibold pixel-font">{valerian.name}</p>
-                  </div>
-                ) : null;
-              })}
-            </div>
-          </div>
-        </motion.div>
-      ))}
+          <ThumbsUp size={20} />
+          <span className="pixel-font">{selectedTeam.upvotes}</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleVote(selectedTeam.id, false);
+          }}
+          className={`bg-red-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 ${
+            userVotes[selectedTeam.id] === 'downvote' ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={userVotes[selectedTeam.id] === 'downvote'}
+        >
+          <ThumbsDown size={20} />
+          <span className="pixel-font">{selectedTeam.downvotes}</span>
+        </motion.button>
+      </div>
+      <CommentSection 
+        entityId={selectedTeam.id} 
+        collectionPath="teams"
+        customStyles={{
+          input: "bg-indigo-700",
+          textarea: "bg-indigo-700"
+        }}
+      />
     </div>
   );
-};
-
-
-const SelectedTeamView: React.FC = () => (
-  <div className="bg-indigo-800 p-4 md:p-6 rounded-lg shadow-lg">
-    <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-6">
-      {selectedTeam.valerians.map((valerianId: number) => {
-        const valerian = valerians.find(v => v.id === valerianId);
-        return valerian ? (
-          <motion.div 
-            key={valerian.id}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`w-20 md:w-32 h-28 md:h-44 ${
-              valerian.stars === 4 ? 'bg-purple-700' : 'bg-indigo-700'
-            } rounded-lg p-2 md:p-4 flex flex-col items-center justify-between shadow-md`}
-          >
-            <div className="w-16 h-16 md:w-24 md:h-24 relative overflow-hidden rounded-full">
-              <Image
-                src={valerian.image}
-                alt={valerian.name}
-                layout="fill"
-                objectFit="cover"
-                sizes="(max-width: 768px) 64px, 96px"
-                className="rounded-full"
-              />
-            </div>
-            <p className="text-xs md:text-sm text-center mt-1 md:mt-2 w-full font-semibold truncate">{valerian.name}</p>
-          </motion.div>
-        ) : null;
-      })}
-    </div>
-    <div className="flex justify-center space-x-4 mb-6">
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleVote(selectedTeam.id, true);
-        }}
-        className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
-      >
-        <ThumbsUp size={20} />
-        <span className="pixel-font">{selectedTeam.upvotes}</span>
-      </motion.button>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleVote(selectedTeam.id, false);
-        }}
-        className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
-      >
-        <ThumbsDown size={20} />
-        <span className="pixel-font">{selectedTeam.downvotes}</span>
-      </motion.button>
-    </div>
-    <div className="flex justify-center mb-6">
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setSelectedTeam(null)}
-        className="bg-yellow-400 text-indigo-900 px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold text-sm md:text-lg hover:bg-yellow-300 flex items-center"
-      >
-        <ArrowLeft size={20} className="mr-2" />
-        Back to Teams
-      </motion.button>
-    </div>
-    <CommentSection 
-      entityId={selectedTeam.id} 
-      collectionPath="teams"
-      customStyles={{
-        input: "bg-indigo-700",
-        textarea: "bg-indigo-700"
-      }}
-    />
-  </div>
-);
-
 
   return (
     <div className="min-h-screen bg-indigo-950 text-white px-4 md:px-6 py-6 md:py-12">
       <div className="container mx-auto max-w-7xl">
+        {selectedTeam ? (
+          <BackButton onClick={() => setSelectedTeam(null)} />
+        ) : (
+          <Link href="/">
+            <BackButton />
+          </Link>
+        )}
         <h1 className="text-3xl md:text-5xl font-bold mb-6 md:mb-12 text-center text-yellow-400">Team Builder</h1>
         {!selectedTeam ? (
           <>
             {levelRanges.map(range => (
               <div key={range.id} className="mb-8 md:mb-16">
                 <div className="flex justify-between items-center mb-4 md:mb-6">
-                  <h2 className="text-xl md:text-3xl font-bold text-yellow-400">{range.label} Teams</h2>
+                  <div className="flex items-center">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => toggleSection(range.id)}
+                      className="mr-2 text-yellow-400"
+                    >
+                      {expandedSections[range.id] ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                    </motion.button>
+                    <h2 className="text-xl md:text-3xl font-bold text-yellow-400">{range.label} Teams</h2>
+                  </div>
                   {!creatingTeam && (
                     <motion.button
                       whileHover={{ scale: 1.05 }}
@@ -349,22 +420,33 @@ const SelectedTeamView: React.FC = () => (
                     </motion.button>
                   )}
                 </div>
-                {creatingTeam && currentLevelRange.id === range.id && (
-                  <>
-                    <ValerianSelector />
-                    <TeamDisplay />
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setCreatingTeam(false)}
-                      className="bg-red-500 text-white p-2 md:px-6 md:py-3 rounded-full md:rounded-lg font-bold text-sm md:text-lg hover:bg-red-400 mb-4 md:mb-6 flex items-center"
+                <AnimatePresence>
+                  {expandedSections[range.id] && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      <X size={20} className="md:mr-2" />
-                      <span className="hidden md:inline">Cancel</span>
-                    </motion.button>
-                  </>
-                )}
-                <TeamList levelRange={range} onTeamSelect={handleTeamSelect} />
+                      {creatingTeam && currentLevelRange.id === range.id && (
+                        <>
+                          <ValerianSelector />
+                          <TeamDisplay />
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setCreatingTeam(false)}
+                            className="bg-red-500 text-white p-2 md:px-6 md:py-3 rounded-full md:rounded-lg font-bold text-sm md:text-lg hover:bg-red-400 mb-4 md:mb-6 flex items-center"
+                          >
+                            <X size={20} className="md:mr-2" />
+                            <span className="hidden md:inline">Cancel</span>
+                          </motion.button>
+                        </>
+                      )}
+                      <TeamList levelRange={range} onTeamSelect={handleTeamSelect} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ))}
           </>

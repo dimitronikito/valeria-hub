@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 import { useRouter } from 'next/navigation';
 import { valerians } from '@/data/valerians';
 import CommentSection from '@/components/CommentSection';
@@ -83,7 +83,7 @@ const ValerianDetail: React.FC<ValerianDetailProps> = ({ params }) => {
                   <Image
                     src={valerian.image}
                     alt={valerian.name}
-                    fill
+                    layout = "fill"
                     style={{ objectFit: "cover" }}
                     className="rounded shadow-lg"
                   />

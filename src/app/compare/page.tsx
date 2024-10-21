@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import Image from 'next/image'
+import Image from "next/legacy/image"
 import { valerians, Valerian } from '@/data/valerians';
 import ElementIcon from '@/components/ElementIcons';
 
