@@ -121,6 +121,12 @@ const ValeriaHub: React.FC = () => {
                   Compare
                 </Link>
               </li>
+             <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
+              <li className="mb-2 sm:mb-0">
+                <Link href="/team-builder" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                  Team Builder
+                </Link>
+              </li>
               <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
               <li className="mb-2 sm:mb-0">
                 <Link href="/arcade" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">

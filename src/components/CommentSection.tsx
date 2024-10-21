@@ -12,8 +12,13 @@ interface Comment {
   createdAt: Timestamp;
 }
 
-interface ValerianCommentSectionProps {
-  valerianId: number;
+interface CommentSectionProps {
+  entityId: string;
+  collectionPath: string;
+  customStyles?: {
+    input?: string;
+    textarea?: string;
+  };
 }
 
 const COMMENTS_PER_PAGE = 10;
@@ -24,7 +29,7 @@ const LoadingSpinner: React.FC = () => (
   </div>
 );
 
-const ValerianCommentSection: React.FC<ValerianCommentSectionProps> = ({ valerianId }) => {
+const CommentSection: React.FC<CommentSectionProps> = ({ entityId, collectionPath, customStyles }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [userName, setUserName] = useState('');
@@ -46,13 +51,13 @@ const ValerianCommentSection: React.FC<ValerianCommentSectionProps> = ({ valeria
 
   useEffect(() => {
     fetchComments();
-  }, [valerianId]);
+  }, [entityId]);
 
   const fetchComments = async (loadMore = false) => {
     if (isLoading || (!loadMore && comments.length > 0)) return;
     setIsLoading(true);
     try {
-      const commentsRef = collection(db, `valerians/${valerianId}/comments`);
+      const commentsRef = collection(db, `${collectionPath}/${entityId}/comments`);
       let q = query(commentsRef, orderBy('createdAt', 'desc'), limit(COMMENTS_PER_PAGE));
 
       if (loadMore && lastVisible) {
@@ -83,7 +88,7 @@ const ValerianCommentSection: React.FC<ValerianCommentSectionProps> = ({ valeria
         userName: userName,
         createdAt: Timestamp.now()
       };
-      const commentsRef = collection(db, `valerians/${valerianId}/comments`);
+      const commentsRef = collection(db, `${collectionPath}/${entityId}/comments`);
       await addDoc(commentsRef, commentData);
       console.log('Comment added successfully');
       setNewComment('');
@@ -121,14 +126,14 @@ const ValerianCommentSection: React.FC<ValerianCommentSectionProps> = ({ valeria
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
           placeholder="Your Name"
-          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base font-mono"
+          className={`w-full p-2 rounded text-white text-sm sm:text-base font-mono ${customStyles?.input || 'bg-indigo-800'}`}
           required
         />
         <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Add a comment..."
-          className="w-full p-2 bg-indigo-800 rounded text-white text-sm sm:text-base font-mono"
+          className={`w-full p-2 rounded text-white text-sm sm:text-base font-mono ${customStyles?.textarea || 'bg-indigo-800'}`}
           rows={3}
           required
         />
@@ -166,4 +171,4 @@ const ValerianCommentSection: React.FC<ValerianCommentSectionProps> = ({ valeria
   );
 };
 
-export default ValerianCommentSection;
+export default CommentSection;

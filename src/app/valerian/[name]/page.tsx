@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { valerians } from '@/data/valerians';
-import ValerianCommentSection from '@/components/ValerianCommentSection';
+import CommentSection from '@/components/CommentSection';
 import ElementIcon, { elementColors } from '@/components/ElementIcons';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -141,7 +141,10 @@ const ValerianDetail: React.FC<ValerianDetailProps> = ({ params }) => {
         </div>
 
         <div className="bg-indigo-900 rounded-lg p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <ValerianCommentSection valerianId={valerian.id} />
+        <CommentSection 
+          entityId={valerian.id.toString()} 
+          collectionPath="valerians"
+        />
         </div>
       </div>
     </div>
