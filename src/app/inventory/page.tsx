@@ -4,13 +4,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ethers } from 'ethers';
-import WalletConnectProvider from '@walletconnect/web3-provider';
-import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
-import Web3Modal from 'web3modal';
 import { useRouter } from 'next/navigation';
 import { NFT, NFTAttribute } from '@/types/nft';
 import { useInventory } from '@/context/InventoryContext';
 import { XIcon } from 'lucide-react';
+
+// Import types for Web3Modal
+import type Web3Modal from 'web3modal';
+import type WalletConnectProvider from '@walletconnect/web3-provider';
+import type CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 
 const XAI_CHAIN_ID = 660279;
 
@@ -19,24 +21,25 @@ const ELEMENTS = [
   'Air', 'Metal', 'Pixie', 'Dark', 'Light'
 ];
 
-const providerOptions = {
+// Define the provider options type
+type ProviderOptions = {
   walletconnect: {
-    package: WalletConnectProvider,
+    package: typeof WalletConnectProvider;
     options: {
       rpc: {
-        660279: "https://xai-chain.net/rpc"
-      }
-    }
-  },
+        [chainId: number]: string;
+      };
+    };
+  };
   coinbasewallet: {
-    package: CoinbaseWalletSDK,
+    package: typeof CoinbaseWalletSDK;
     options: {
-      appName: "Your App Name",
-      rpc: "https://xai-chain.net/rpc",
-      chainId: 660279,
-      darkMode: false
-    }
-  }
+      appName: string;
+      rpc: string;
+      chainId: number;
+      darkMode: boolean;
+    };
+  };
 };
 
 let web3Modal: Web3Modal | null = null;
@@ -61,53 +64,42 @@ const InventoryPage: React.FC = () => {
   const [isManualMode, setIsManualMode] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !web3Modal) {
-      web3Modal = new Web3Modal({
-        network: "xai",
-        cacheProvider: false,
-        providerOptions
-      });
-    }
-  }, []);
+    const initWeb3Modal = async () => {
+      if (typeof window !== 'undefined' && !web3Modal) {
+        const Web3ModalModule = await import('web3modal');
+        const WalletConnectProvider = await import('@walletconnect/web3-provider');
+        const CoinbaseWalletSDK = await import('@coinbase/wallet-sdk');
 
-  const switchNetwork = async () => {
-    if (!provider) return;
-    try {
-      await (window as any).ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: `0x${XAI_CHAIN_ID.toString(16)}` }],
-      });
-      setIsWrongNetwork(false);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      fetchNFTs(provider, address);
-    } catch (switchError: any) {
-      if (switchError.code === 4902) {
-        try {
-          await (window as any).ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: `0x${XAI_CHAIN_ID.toString(16)}`,
-              chainName: 'XAI Chain',
-              nativeCurrency: { name: 'XAI', symbol: 'XAI', decimals: 18 },
-              rpcUrls: ['https://xai-chain.net/rpc'],
-              blockExplorerUrls: ['https://explorer.xai-chain.net/']
-            }],
-          });
-          setIsWrongNetwork(false);
-          const signer = await provider.getSigner();
-          const address = await signer.getAddress();
-          fetchNFTs(provider, address);
-        } catch (addError) {
-          console.error('Failed to add XAI network:', addError);
-          setError('Failed to add XAI network to your wallet.');
-        }
-      } else {
-        console.error('Failed to switch to XAI network:', switchError);
-        setError('Failed to switch to XAI network. Please try again.');
+        const providerOptions: ProviderOptions = {
+          walletconnect: {
+            package: WalletConnectProvider.default,
+            options: {
+              rpc: {
+                [XAI_CHAIN_ID]: "https://xai-chain.net/rpc"
+              }
+            }
+          },
+          coinbasewallet: {
+            package: CoinbaseWalletSDK.default,
+            options: {
+              appName: "Your App Name",
+              rpc: "https://xai-chain.net/rpc",
+              chainId: XAI_CHAIN_ID,
+              darkMode: false
+            }
+          }
+        };
+
+        web3Modal = new Web3ModalModule.default({
+          network: "xai",
+          cacheProvider: false,
+          providerOptions
+        });
       }
-    }
-  };
+    };
+
+    initWeb3Modal();
+  }, []);
 
   const connectWallet = useCallback(async () => {
     if (!web3Modal) return;
@@ -145,6 +137,45 @@ const InventoryPage: React.FC = () => {
       setError(null);
     }
   }, [setNfts]);
+
+    const switchNetwork = async () => {
+    if (!provider) return;
+    try {
+      await (window as any).ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${XAI_CHAIN_ID.toString(16)}` }],
+      });
+      setIsWrongNetwork(false);
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      fetchNFTs(provider, address);
+    } catch (switchError: any) {
+      if (switchError.code === 4902) {
+        try {
+          await (window as any).ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: `0x${XAI_CHAIN_ID.toString(16)}`,
+              chainName: 'XAI Chain',
+              nativeCurrency: { name: 'XAI', symbol: 'XAI', decimals: 18 },
+              rpcUrls: ['https://xai-chain.net/rpc'],
+              blockExplorerUrls: ['https://explorer.xai-chain.net/']
+            }],
+          });
+          setIsWrongNetwork(false);
+          const signer = await provider.getSigner();
+          const address = await signer.getAddress();
+          fetchNFTs(provider, address);
+        } catch (addError) {
+          console.error('Failed to add XAI network:', addError);
+          setError('Failed to add XAI network to your wallet.');
+        }
+      } else {
+        console.error('Failed to switch to XAI network:', switchError);
+        setError('Failed to switch to XAI network. Please try again.');
+      }
+    }
+  };
 
   // useEffect(() => {
   //   if (web3Modal && web3Modal.cachedProvider && nfts.length === 0) {
