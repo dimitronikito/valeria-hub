@@ -40,7 +40,6 @@ export default function ComparePage() {
           <Image
             src={valerian.image}
             alt={valerian.name}
-            fill
             className="object-cover rounded-lg"
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
           />
