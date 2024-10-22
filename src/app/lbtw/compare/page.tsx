@@ -40,6 +40,7 @@ export default function ComparePage() {
           <Image
             src={valerian.image}
             alt={valerian.name}
+            layout = "fill"
             className="object-cover rounded-lg"
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
           />
@@ -96,8 +97,8 @@ export default function ComparePage() {
             <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center uppercase tracking-widest text-yellow-400 shadow-yellow-400 shadow-sm">Compare Tool</h1>
           </div>
         </header>
-        <Link href="/" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
-          ← Home
+        <Link href="/lbtw" className="inline-block mb-4 px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition-colors">
+          ← Back
         </Link>
         <div className="container mx-auto max-w-6xl px-4 py-8">
           <div className="mb-8 flex flex-col sm:flex-row gap-4">

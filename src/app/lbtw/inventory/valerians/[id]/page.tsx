@@ -3,27 +3,24 @@ import { notFound } from 'next/navigation';
 import LbtwValerianDetailPage from '@/components/LbtwValerianDetailPage';
 import LbtwValerianDetailSkeleton from '@/components/LbtwValerianDetailSkeleton';
 import { NFT } from '@/types/nft';
-import { useRouter } from 'next/router';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     balance?: string;
-  };
+  }>;
 }
 
 async function fetchNFTData(id: string, balance: number): Promise<NFT> {
   const metadataUrl = `https://bafybeiak2htv3skjlzhd3hirumor7hbg7ajoyfs3yjhxfg5fuxzkqhpkeq.ipfs.dweb.link/${id}.json`;
-  
   try {
     const response = await fetch(metadataUrl);
     if (!response.ok) {
       throw new Error('Failed to fetch NFT metadata');
     }
     const metadata = await response.json();
-
     return {
       id: id,
       balance: balance,
@@ -41,8 +38,13 @@ async function fetchNFTData(id: string, balance: number): Promise<NFT> {
 
 async function AssetDetail({ params, searchParams }: PageProps) {
   try {
-    const balance = parseInt(searchParams.balance || 'N/A');
-    const nft = await fetchNFTData(params.id, balance);
+    // Await both params and searchParams
+    const resolvedParams = await params;
+    const resolvedSearchParams = await searchParams;
+    
+    const balance = parseInt(resolvedSearchParams.balance || 'N/A');
+    const nft = await fetchNFTData(resolvedParams.id, balance);
+    
     return <LbtwValerianDetailPage nft={nft} />;
   } catch (error) {
     console.error('Error fetching NFT data:', error);

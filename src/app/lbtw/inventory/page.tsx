@@ -298,7 +298,7 @@ useEffect(() => {
   };
 
   const handleNFTClick = (nft: NFT) => {
-    router.push(`/inventory/lbtw/${nft.id}?balance=${nft.balance}`);
+    router.push(`/lbtw/inventory/valerians/${nft.id}?balance=${nft.balance}`);
   };
 
 const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index }) => {
@@ -344,29 +344,25 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
 
   const cardStyle = getCardStyle();
 
-  return (
+return (
     <div
       className={`rounded-lg overflow-hidden opacity-0 ${isLoaded ? 'animate-fade-in' : ''} cursor-pointer transition-all duration-300 hover:scale-105 ${cardStyle.glowEffect} ${cardStyle.animationClass || ''} group`}
       style={{ animationDelay: `${index * 50}ms` }}
     >
-          <div className="absolute -top-1.5 -right-1 bg-yellow-400 text-indigo-900 font-bold px-3 pt-2 pb-1 rounded-bl-xl z-10">
+      <div className="absolute -top-1.5 -right-1 bg-yellow-400 text-indigo-900 font-bold px-3 pt-2 pb-1 rounded-bl-xl z-10">
         x{nft.balance}
       </div>
       <div className={`p-1 ${cardStyle.gradientBorder} relative overflow-hidden shimmer-border`}>
-        <div className="bg-indigo-900 rounded-lg p-3 relative">
-          <Image
-            src={nft.metadata?.image || '/placeholder-image.png'}
-            alt={nft.metadata?.name || 'NFT'}
-            width={500}
-            height={500}
-            style={{
-              width: '100%',
-              height: 'auto',
-              objectFit: 'contain',
-              maxHeight: '240px'
-            }}
-            className="rounded-md"
-          />
+        <div className="bg-indigo-900 rounded-lg py-3 relative">
+          <div className="relative aspect-square w-full">
+            <Image
+              src={nft.metadata?.image || '/placeholder-image.png'}
+              alt={nft.metadata?.name || 'NFT'}
+              layout="fill"
+              objectFit="contain"
+              className="rounded-md"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -451,8 +447,8 @@ const NFTCard: React.FC<{ nft: NFT; index: number }> = React.memo(({ nft, index 
         </header>
         <div className="flex flex-col mb-8 space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
-            <Link href="/" className="inline-block px-4 py-2 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition duration-300">
-              ← Home
+            <Link href="/lbtw" className="inline-block px-4 py-2 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition duration-300">
+              ← Back
             </Link>
             
             {!account && (

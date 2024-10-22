@@ -11,9 +11,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link'
 
 const levelRanges = [
-  { id: 1, label: "Level 1-3", stars: [1, 4] },
-  { id: 2, label: "Level 4-6", stars: [2, 4] },
-  { id: 3, label: "Level 7+", stars: [3, 4] }
+  { id: 1, label: "Lvl 1-3", stars: [1, 4] },
+  { id: 2, label: "Lvl 4-6", stars: [2, 4] },
+  { id: 3, label: "Lvl 7+", stars: [3, 4] }
 ];
 
 const TeamBuilder: React.FC = () => {
@@ -157,7 +157,7 @@ const TeamBuilder: React.FC = () => {
       onClick={onClick}
     >
       <ArrowLeft size={20} className="mr-2" />
-      {selectedTeam ? 'Team Builder' : 'Home'}
+      Back
     </motion.button>
   );
 
@@ -184,10 +184,9 @@ const TeamBuilder: React.FC = () => {
                 <Image
                   src={valerian.image}
                   alt={valerian.name}
-                  layout="fill"
-                  objectFit="cover"
+                  fill
                   sizes="(max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                  className="rounded-full"
+                  className="rounded-full object-cover"
                 />
               </div>
               <p className="text-xs md:text-sm text-center mt-2 font-semibold truncate">{valerian.name}</p>
@@ -221,10 +220,9 @@ const TeamBuilder: React.FC = () => {
               <Image
                 src={valerian.image}
                 alt={valerian.name}
-                layout="fill"
-                objectFit="cover"
+                fill
                 sizes="(max-width: 768px) 48px, 80px"
-                className="rounded-full"
+                className="rounded-full object-cover"
               />
             </div>
             <p className="text-xs md:text-sm text-center mt-1 w-full font-semibold truncate">{valerian.name}</p>
@@ -287,10 +285,9 @@ const TeamBuilder: React.FC = () => {
                         <Image
                           src={valerian.image}
                           alt={valerian.name}
-                          layout="fill"
-                          objectFit="cover"
-                          sizes="(max-width: 768px) 40px, 64px"
-                          className="rounded-full"
+                          fill
+                          sizes="(max-width: 768px) 48px, 80px"
+                          className="rounded-full object-cover"
                         />
                       </div>
                       <p className="text-[8px] md:text-xs text-center mt-0.5 md:mt--1 w-full truncate font-semibold pixel-font">{valerian.name}</p>
@@ -323,10 +320,9 @@ const TeamBuilder: React.FC = () => {
                 <Image
                   src={valerian.image}
                   alt={valerian.name}
-                  layout="fill"
-                  objectFit="cover"
-                  sizes="(max-width: 768px) 64px, 96px"
-                  className="rounded-full"
+                  fill
+                  sizes="(max-width: 768px) 48px, 80px"
+                  className="rounded-full object-cover"
                 />
               </div>
               <p className="text-xs md:text-sm text-center mt-1 md:mt-2 w-full font-semibold truncate">{valerian.name}</p>
@@ -383,11 +379,10 @@ const TeamBuilder: React.FC = () => {
         {selectedTeam ? (
           <BackButton onClick={() => setSelectedTeam(null)} />
         ) : (
-          <Link href="/">
+          <Link href="/lbtw">
             <BackButton />
           </Link>
         )}
-        <h1 className="text-3xl md:text-5xl font-bold mb-6 md:mb-12 text-center text-yellow-400">Team Builder</h1>
         {!selectedTeam ? (
           <>
             {levelRanges.map(range => (

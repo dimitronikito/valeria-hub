@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, use } from 'react';
 import Image from "next/legacy/image";
 import { useRouter } from 'next/navigation';
 import { valerians } from '@/data/valerians';
@@ -29,22 +29,26 @@ const StatBar: React.FC<StatBarProps> = ({ label, value, max, color }) => (
 );
 
 interface ValerianDetailProps {
-  params: { name: string };
+  params: Promise<{ name: string }>;
 }
 
 const ValerianDetail: React.FC<ValerianDetailProps> = ({ params }) => {
   const router = useRouter();
-  const { name } = params;
-  const valerian = valerians.find(v => v.name === decodeURIComponent(name));
+  const { name } = use(params);
   const [statsVisible, setStatsVisible] = useState(false);
+
+  // Move state updates outside of render
+  const handleStatsToggle = () => {
+    setStatsVisible(prev => !prev);
+  };
 
   const handleBack = () => {
     router.back();
   };
 
-  const toggleStats = () => {
-    setStatsVisible(!statsVisible);
-  };
+  const valerian = React.useMemo(() => {
+    return valerians.find(v => v.name === decodeURIComponent(name));
+  }, [name]);
 
   if (!valerian) {
     return (
@@ -83,7 +87,7 @@ const ValerianDetail: React.FC<ValerianDetailProps> = ({ params }) => {
                   <Image
                     src={valerian.image}
                     alt={valerian.name}
-                    layout = "fill"
+                    layout="fill"
                     style={{ objectFit: "cover" }}
                     className="rounded shadow-lg"
                   />
@@ -109,7 +113,7 @@ const ValerianDetail: React.FC<ValerianDetailProps> = ({ params }) => {
                   <div className="flex justify-between items-center mb-2">
                     <h2 className="text-lg sm:text-xl font-semibold text-yellow-400">Stats</h2>
                     <button
-                      onClick={toggleStats}
+                      onClick={handleStatsToggle}
                       className="sm:hidden bg-indigo-700 text-yellow-400 px-3 py-1 rounded flex items-center transition-colors hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-xs"
                     >
                       {statsVisible ? (
@@ -141,10 +145,10 @@ const ValerianDetail: React.FC<ValerianDetailProps> = ({ params }) => {
         </div>
 
         <div className="bg-indigo-900 rounded-lg p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <CommentSection 
-          entityId={valerian.id.toString()} 
-          collectionPath="valerians"
-        />
+          <CommentSection 
+            entityId={valerian.id.toString()} 
+            collectionPath="valerians"
+          />
         </div>
       </div>
     </div>
