@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { NFT } from '@/types/nft';
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const id = context.params.id;
+  const id = params.id;
   const metadataUrl = `https://bafybeiak2htv3skjlzhd3hirumor7hbg7ajoyfs3yjhxfg5fuxzkqhpkeq.ipfs.dweb.link/${id}.json`;
 
   try {
@@ -23,9 +23,9 @@ export async function GET(
         attributes: metadata.attributes
       }
     };
-    return NextResponse.json(nft);
+    return Response.json(nft);
   } catch (error) {
     console.error('Error fetching NFT data:', error);
-    return NextResponse.json({ error: 'Failed to fetch NFT data' }, { status: 500 });
+    return Response.json({ error: 'Failed to fetch NFT data' }, { status: 500 });
   }
 }

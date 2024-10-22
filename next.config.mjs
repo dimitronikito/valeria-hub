@@ -1,10 +1,10 @@
-import next from 'next';
+import { NextConfig } from 'next';
 
-/** @type {import('next').NextConfig} */
+/** @type {NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['ipfs.io', 'drive.google.com'], // Add any other domains you need
+    domains: ['ipfs.io', 'drive.google.com'],
   },
 };
 
