@@ -1,21 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { NFT } from '@/types/nft';
+import { NextRequest } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Record<string, string | string[]> }
 ) {
-  const id = params.id as string;
+  // Get the ID from the URL pathname
+  const id = request.nextUrl.pathname.split('/').pop();
+
+  if (!id) {
+    return Response.json(
+      { error: 'ID is required' },
+      { status: 400 }
+    );
+  }
+
   const metadataUrl = `https://bafybeiak2htv3skjlzhd3hirumor7hbg7ajoyfs3yjhxfg5fuxzkqhpkeq.ipfs.dweb.link/${id}.json`;
 
   try {
-    const response = await fetch(metadataUrl);
+    const response = await fetch(metadataUrl, {
+      next: {
+        revalidate: 3600 // Cache for 1 hour
+      }
+    });
+
     if (!response.ok) {
       throw new Error('Failed to fetch NFT metadata');
     }
+
     const metadata = await response.json();
-    const nft: NFT = {
-      id: id,
+    const nft = {
+      id,
       balance: 1,
       metadata: {
         name: metadata.name,
@@ -23,9 +36,13 @@ export async function GET(
         attributes: metadata.attributes
       }
     };
-    return NextResponse.json(nft);
+
+    return Response.json(nft);
   } catch (error) {
     console.error('Error fetching NFT data:', error);
-    return NextResponse.json({ error: 'Failed to fetch NFT data' }, { status: 500 });
+    return Response.json(
+      { error: 'Failed to fetch NFT data' },
+      { status: 500 }
+    );
   }
 }

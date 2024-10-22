@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import LbtwValerianDetailPage from '@/components/LbtwValerianDetailPage';
-import LbtwValerianDetailSkeleton from '@/components/LbtwValerianDetailSkeleton';
+import LbtwValerianDetailPage from './LbtwValerianDetailPage';
+import LbtwValerianDetailSkeleton from './LbtwValerianDetailSkeleton';
 import { NFT } from '@/types/nft';
 
-interface PageProps {
+type PageProps = {
   params: Promise<{
     id: string;
   }>;
@@ -15,15 +15,22 @@ interface PageProps {
 
 async function fetchNFTData(id: string, balance: number): Promise<NFT> {
   const metadataUrl = `https://bafybeiak2htv3skjlzhd3hirumor7hbg7ajoyfs3yjhxfg5fuxzkqhpkeq.ipfs.dweb.link/${id}.json`;
+  
   try {
-    const response = await fetch(metadataUrl);
+    const response = await fetch(metadataUrl, {
+      next: {
+        revalidate: 3600
+      }
+    });
+
     if (!response.ok) {
       throw new Error('Failed to fetch NFT metadata');
     }
+
     const metadata = await response.json();
     return {
-      id: id,
-      balance: balance,
+      id,
+      balance,
       metadata: {
         name: metadata.name,
         image: metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/'),
@@ -39,15 +46,17 @@ async function fetchNFTData(id: string, balance: number): Promise<NFT> {
 async function AssetDetail({ params, searchParams }: PageProps) {
   try {
     // Await both params and searchParams
-    const resolvedParams = await params;
-    const resolvedSearchParams = await searchParams;
-    
-    const balance = parseInt(resolvedSearchParams.balance || 'N/A');
+    const [resolvedParams, resolvedSearchParams] = await Promise.all([
+      params,
+      searchParams
+    ]);
+
+    const balance = resolvedSearchParams.balance ? parseInt(resolvedSearchParams.balance) : 0;
     const nft = await fetchNFTData(resolvedParams.id, balance);
     
     return <LbtwValerianDetailPage nft={nft} />;
   } catch (error) {
-    console.error('Error fetching NFT data:', error);
+    console.error('Error in AssetDetail:', error);
     notFound();
   }
 }
