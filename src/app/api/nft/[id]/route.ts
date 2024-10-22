@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { NFT } from '@/types/nft';
 
 export async function GET(
@@ -23,9 +23,9 @@ export async function GET(
         attributes: metadata.attributes
       }
     };
-    return Response.json(nft);
+    return NextResponse.json(nft);
   } catch (error) {
     console.error('Error fetching NFT data:', error);
-    return Response.json({ error: 'Failed to fetch NFT data' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch NFT data' }, { status: 500 });
   }
 }
