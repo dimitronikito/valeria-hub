@@ -6,6 +6,7 @@ import Image from 'next/image';
 import ElementIcon from '@/components/ElementIcons';
 import { valerians, Valerian } from '@/data/valerians';
 import TrendingSection from '@/components/TrendingCardsPreview';
+import { play } from '@/lib/fonts';
 
 const ValeriaHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -38,6 +39,107 @@ const ValeriaHub: React.FC = () => {
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+interface TypewriterTextProps {
+  text: string;
+  delay?: number;
+}
+
+const TypewriterText: React.FC<TypewriterTextProps> = ({ 
+  text, 
+  delay = 50 
+}) => {
+  const [displayedText, setDisplayedText] = useState<string>('');
+  const [isTyping, setIsTyping] = useState<boolean>(true);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    let currentIndex = 0;
+
+    const typeNextCharacter = (): void => {
+      if (currentIndex < text.length) {
+        setDisplayedText(text.slice(0, currentIndex + 1));
+        currentIndex++;
+        timeoutId = setTimeout(typeNextCharacter, delay);
+      } else {
+        setIsTyping(false);
+      }
+    };
+
+    timeoutId = setTimeout(typeNextCharacter, delay);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [text, delay]);
+
+  return (
+    <div className="relative">
+      <p className={`${play.className} text-xl sm:text-2xl md:text-3xl text-indigo-900 tracking-wide leading-relaxed`}>
+        <span className="">{displayedText}</span>
+        {isTyping && (
+          <span className="inline-block w-[2px] h-[1em] bg-indigo-900 ml-1 animate-pulse" />
+        )}
+      </p>
+    </div>
+  );
+};
+
+interface FavianGreetingProps {
+  mascotImageSrc?: string;
+  welcomeText?: string;
+  className?: string;
+}
+
+const FavianGreeting: React.FC<FavianGreetingProps> = ({
+  mascotImageSrc = "/chibi_favian.png",
+  welcomeText = "Hi! Welcome to the Valeria Community Hub!",
+  className = ""
+}) => {
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  return (
+    <div className={`max-w-4xl mx-auto mb-8 px-4 ${className}`.trim()}>
+      <div 
+        className={`
+          relative bg-indigo-900/90 rounded-2xl p-4 shadow-xl 
+          transition-opacity duration-500 
+          ${isVisible ? 'opacity-100' : 'opacity-0'}
+        `}
+      >
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+          {/** Image Container **/}
+          <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 flex-shrink-0">
+            <Image
+              src={mascotImageSrc}
+              alt="Valeria Mascot"
+              width={256}
+              height={256}
+              className="object-contain w-full h-full"
+              priority={true}
+            />
+          </div>
+          {/** Text Bubble with Updated Typography **/}
+          <div className="relative bg-white rounded-xl p-2 sm:p-4 w-full">
+            {/** Speech Bubble Triangle **/}
+            <div className="hidden sm:block absolute left-0 top-1/2 -translate-x-2 -translate-y-1/2">
+              <div className="w-0 h-0 border-y-8 border-y-transparent border-r-[16px] border-r-white" />
+            </div>
+            {/** Text Content with Enhanced Typography **/}
+            <div className="relative shadow-sm">
+              <TypewriterText text={welcomeText} delay={75} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
   const ValerianCard: React.FC<{ valerian: Valerian; index: number }> = React.memo(({ valerian, index }) => {
     return (
@@ -123,6 +225,7 @@ const ValeriaHub: React.FC = () => {
           </div>
         </nav>
         
+        <FavianGreeting />
         {/* Search Bar */}
         <div className="mb-6">
           <div className="relative w-full max-w-md mx-auto">

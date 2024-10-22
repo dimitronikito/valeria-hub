@@ -15,18 +15,38 @@ const LBTWHub = () => {
           </div>
         </header>
 
-        <Link href="/" className="inline-block px-4 py-2 my-4 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition duration-300">
-          ← Back
-        </Link>
+        <div className="flex justify-between items-center mt-4">
+          <Link href="/" className="px-4 py-2 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition duration-300">
+            ← Back
+          </Link>
+          
+          <div className="flex gap-4">
+            <a 
+              href="https://apps.apple.com/us/app/land-before-the-war/id6446962942" 
+              className="text-white hover:text-yellow-400 transition-colors"
+              aria-label="Download on the App Store"
+            >
+              <FaApple className="w-6 h-6" />
+            </a>
+
+            <a 
+              href="https://play.google.com/store/apps/details?id=com.valeriagames.landbeforethewar" 
+              className="text-white hover:text-yellow-400 transition-colors"
+              aria-label="Get it on Google Play"
+            >
+              <FaAndroid className="w-6 h-6" />
+            </a>
+          </div>
+        </div>
 
         {/* Simplified Links Section */}
         <nav className="py-4 sm:py-8">
           <div className="container mx-auto max-w-6xl px-4">
             <ul className="flex flex-wrap justify-center space-x-2 sm:space-x-4">
               <li className="mb-2 sm:mb-0">
-                <Link href="/lbtw/compare" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
-                  Compare
-                </Link>
+                <Link href="/lbtw/team-builder" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                  Team Builder
+              </Link>
               </li>
               <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
               <li className="mb-2 sm:mb-0">
@@ -36,38 +56,13 @@ const LBTWHub = () => {
               </li>
               <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
               <li className="mb-2 sm:mb-0">
-                <Link href="/lbtw/team-builder" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
-                  Team Builder
+                <Link href="/lbtw/compare" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                  Compare
                 </Link>
               </li>
             </ul>
           </div>
         </nav>
-
-        {/* Mobile App Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-          <a 
-            href="https://apps.apple.com/us/app/land-before-the-war/id6446962942" 
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors group"
-          >
-            <FaApple className="w-6 h-6 group-hover:text-yellow-400 transition-colors" />
-            <div className="flex flex-col">
-              <span className="text-xs">Download on the</span>
-              <span className="text-lg font-semibold">App Store</span>
-            </div>
-          </a>
-
-          <a 
-            href="https://play.google.com/store/apps/details?id=com.valeriagames.landbeforethewar" 
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors group"
-          >
-            <FaAndroid className="w-6 h-6 group-hover:text-yellow-400 transition-colors" />
-            <div className="flex flex-col">
-              <span className="text-xs">Get it on</span>
-              <span className="text-lg font-semibold">Google Play</span>
-            </div>
-          </a>
-        </div>
 
         {/* Trending Section Component */}
         <TrendingSection />
