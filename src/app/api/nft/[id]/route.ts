@@ -1,11 +1,18 @@
 import { NextRequest } from 'next/server';
 import { NFT } from '@/types/nft';
 
+// Add this type definition
+interface RouteSegmentProps {
+  params: {
+    id: string;
+  }
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: RouteSegmentProps
 ) {
-  const id = params.id;
+  const id = props.params.id;
   const metadataUrl = `https://bafybeiak2htv3skjlzhd3hirumor7hbg7ajoyfs3yjhxfg5fuxzkqhpkeq.ipfs.dweb.link/${id}.json`;
 
   try {
