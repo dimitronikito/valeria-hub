@@ -6,7 +6,7 @@ import { collection, addDoc, getDocs, getDoc, updateDoc, doc, Timestamp, orderBy
 import { db } from '@/lib/firebase';
 import { valerians, Valerian } from '@/data/valerians';
 import CommentSection from '@/components/CommentSection';
-import { CheckCircle, ThumbsUp, ThumbsDown, Plus, X, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, ThumbsUp, ThumbsDown, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link'
 
@@ -156,8 +156,7 @@ const TeamBuilder: React.FC = () => {
       className="bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center mb-6"
       onClick={onClick}
     >
-      <ArrowLeft size={20} className="mr-2" />
-      Back
+      ← Back
     </motion.button>
   );
 
@@ -374,7 +373,7 @@ const TeamBuilder: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-indigo-950 text-white px-4 md:px-6 py-6 md:py-12">
+    <div className="min-h-screen bg-indigo-950 text-white px-4 py-4">
       <div className="container mx-auto max-w-7xl">
         {selectedTeam ? (
           <BackButton onClick={() => setSelectedTeam(null)} />

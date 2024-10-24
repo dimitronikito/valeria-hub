@@ -48,7 +48,7 @@ const LbtwValerianDetailPage: React.FC<LbtwValerianDetailPageProps> = ({ nft }) 
     <div className="min-h-screen bg-gradient-to-br from-indigo-950 to-purple-900 text-white px-4 sm:px-6 py-8 sm:py-10">
       <div className="container mx-auto max-w-7xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-10 space-y-4 sm:space-y-0">
-          <Link href="/lbtw/inventory" className="inline-block px-4 py-2 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition duration-300">
+          <Link href="/lbtw/inventory" className="inline-block px-4 py-2 bg-indigo-700 text-white rounded hover:bg-indigo-600 transition duration-300">
             ← Back
           </Link>
           <div className="text-right">

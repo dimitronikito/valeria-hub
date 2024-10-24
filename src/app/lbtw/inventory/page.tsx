@@ -447,7 +447,7 @@ return (
         </header>
         <div className="flex flex-col mb-8 space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
-            <Link href="/lbtw" className="inline-block px-4 py-2 bg-indigo-700 text-yellow-400 rounded hover:bg-indigo-600 transition duration-300">
+            <Link href="/lbtw" className="inline-block px-4 py-2 bg-indigo-700 text-white rounded hover:bg-indigo-600 transition duration-300">
               ← Back
             </Link>
             

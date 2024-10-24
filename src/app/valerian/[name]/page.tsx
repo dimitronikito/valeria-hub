@@ -65,7 +65,7 @@ const ValerianDetail: React.FC<ValerianDetailProps> = ({ params }) => {
       <div className="max-w-4xl mx-auto">
         <button
           onClick={handleBack}
-          className="mb-4 px-3 py-1 bg-indigo-700 text-yellow-400 rounded text-sm sm:text-base transition-colors hover:bg-indigo-600 hover:scale-105 transform"
+          className="mb-4 px-3 py-1 bg-indigo-700 text-white rounded text-sm sm:text-base transition-colors hover:bg-indigo-600 hover:scale-105 transform"
         >
           ← Back
         </button>

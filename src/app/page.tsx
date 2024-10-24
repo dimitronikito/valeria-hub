@@ -5,40 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ElementIcon from '@/components/ElementIcons';
 import { valerians, Valerian } from '@/data/valerians';
-import TrendingSection from '@/components/TrendingCardsPreview';
 import { play } from '@/lib/fonts';
-
-const ValeriaHub: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  const filteredValerians = valerians.filter((valerian) =>
-    valerian.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    valerian.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    valerian.class.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  type StarRating = 1 | 2 | 3 | 4;
-
-  const groupedValerians: Record<StarRating, Valerian[]> = {
-    1: filteredValerians.filter(v => v.stars === 1),
-    2: filteredValerians.filter(v => v.stars === 2),
-    3: filteredValerians.filter(v => v.stars === 3),
-    4: filteredValerians.filter(v => v.stars === 4)
-  };
-
-  const evolutionHeaders: Record<StarRating, string> = {
-    1: "Starters",
-    2: "Second Evolutions",
-    3: "Third Evolutions",
-    4: "Legendaries"
-  };
-
-  const starRatings: StarRating[] = [1, 2, 3, 4];
-
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
 
 interface TypewriterTextProps {
   text: string;
@@ -91,13 +58,15 @@ interface FavianGreetingProps {
   className?: string;
 }
 
-const FavianGreeting: React.FC<FavianGreetingProps> = ({
+// Moved FavianGreeting to a separate memo-ized component
+const FavianGreeting = React.memo<FavianGreetingProps>(({
   mascotImageSrc = "/chibi_favian.png",
   welcomeText = "Hi! Welcome to the Valeria Community Hub!",
   className = ""
 }) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
+  // This effect will only run once when the component mounts
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -112,7 +81,6 @@ const FavianGreeting: React.FC<FavianGreetingProps> = ({
         `}
       >
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-          {/** Image Container **/}
           <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 flex-shrink-0">
             <Image
               src={mascotImageSrc}
@@ -123,13 +91,10 @@ const FavianGreeting: React.FC<FavianGreetingProps> = ({
               priority={true}
             />
           </div>
-          {/** Text Bubble with Updated Typography **/}
           <div className="relative bg-white rounded-xl p-2 sm:p-4 w-full">
-            {/** Speech Bubble Triangle **/}
             <div className="hidden sm:block absolute left-0 top-1/2 -translate-x-2 -translate-y-1/2">
               <div className="w-0 h-0 border-y-8 border-y-transparent border-r-[16px] border-r-white" />
             </div>
-            {/** Text Content with Enhanced Typography **/}
             <div className="relative shadow-sm">
               <TypewriterText text={welcomeText} delay={75} />
             </div>
@@ -138,14 +103,47 @@ const FavianGreeting: React.FC<FavianGreetingProps> = ({
       </div>
     </div>
   );
-};
+});
 
+FavianGreeting.displayName = 'FavianGreeting';
+
+const ValeriaHub: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [cardsLoaded, setCardsLoaded] = useState(false);
+
+  const filteredValerians = valerians.filter((valerian) =>
+    valerian.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    valerian.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    valerian.class.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  type StarRating = 1 | 2 | 3 | 4;
+
+  const groupedValerians: Record<StarRating, Valerian[]> = {
+    1: filteredValerians.filter(v => v.stars === 1),
+    2: filteredValerians.filter(v => v.stars === 2),
+    3: filteredValerians.filter(v => v.stars === 3),
+    4: filteredValerians.filter(v => v.stars === 4)
+  };
+
+  const evolutionHeaders: Record<StarRating, string> = {
+    1: "Starters",
+    2: "Second Evolutions",
+    3: "Third Evolutions",
+    4: "Legendaries"
+  };
+
+  const starRatings: StarRating[] = [1, 2, 3, 4];
+
+  useEffect(() => {
+    setCardsLoaded(true);
+  }, []);
 
   const ValerianCard: React.FC<{ valerian: Valerian; index: number }> = React.memo(({ valerian, index }) => {
     return (
       <Link href={`/valerian/${valerian.name}`}>
         <div 
-          className={`bg-indigo-800 p-3 sm:p-3 rounded-lg shadow-md cursor-pointer hover:bg-indigo-700 transition-all duration-300 border-2 border-indigo-600 opacity-0 ${isLoaded ? 'animate-fade-in' : ''}`} 
+          className={`bg-indigo-800 p-3 sm:p-3 rounded-lg shadow-md cursor-pointer hover:bg-indigo-700 transition-all duration-300 border-2 border-indigo-600 opacity-0 ${cardsLoaded ? 'animate-fade-in' : ''}`} 
           style={{ animationDelay: `${index * 50}ms` }}
         >
           <div className="mb-2">
@@ -205,19 +203,28 @@ const FavianGreeting: React.FC<FavianGreetingProps> = ({
           <div className="container mx-auto max-w-6xl px-4">
             <ul className="flex flex-wrap justify-center space-x-2 sm:space-x-4">
               <li className="mb-2 sm:mb-0">
-                <Link href="/lbtw" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                <Link 
+                  href="/lbtw" 
+                  className="text-yellow-400 hover:text-yellow-300 transition-all duration-300 hover:scale-105 font-medium border-b-2 border-transparent hover:border-yellow-300 py-1 text-sm"
+                >
                   LBTW
                 </Link>
               </li>
-              <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
+              <li className="mb-2 sm:mb-0 text-slate-400">•</li>
               <li className="mb-2 sm:mb-0">
-                <Link href="/arcade" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                <Link 
+                  href="/arcade" 
+                  className="text-yellow-400 hover:text-yellow-300 transition-all duration-300 hover:scale-105 font-medium border-b-2 border-transparent hover:border-yellow-300 py-1 text-sm"
+                >
                   Arcade
                 </Link>
               </li>
-              <li className="mb-2 sm:mb-0 text-yellow-400">•</li>
+              <li className="mb-2 sm:mb-0 text-slate-400">•</li>
               <li className="mb-2 sm:mb-0">
-                <Link href="/socials" className="text-yellow-400 hover:text-yellow-300 text-sm sm:text-base">
+                <Link 
+                  href="/socials" 
+                  className="text-yellow-400 hover:text-yellow-300 transition-all duration-300 hover:scale-105 font-medium border-b-2 border-transparent hover:border-yellow-300 py-1 text-sm"
+                >
                   Links
                 </Link>
               </li>
@@ -226,32 +233,32 @@ const FavianGreeting: React.FC<FavianGreetingProps> = ({
         </nav>
         
         <FavianGreeting />
-        {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative w-full max-w-md mx-auto">
-            <input
-              type="text"
-              placeholder="SEARCH CARDS..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 pl-10 rounded-lg bg-indigo-800 text-white placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm uppercase tracking-wide"
-              aria-label="Search Valerians"
-            />
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-300">🔍</span>
+        
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-4 sm:mb-0 sm:order-2">
+            <div className="relative w-full sm:w-80">
+              <input
+                type="text"
+                placeholder="SEARCH CARDS..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 pl-10 rounded-lg bg-indigo-800 text-white placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm uppercase tracking-wide"
+                aria-label="Search Valerians"
+              />
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-300">🔍</span>
+            </div>
+          </div>
+          <div className="sm:order-1">
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase tracking-wide">
+              {filteredValerians.length} Valerians
+            </h2>
           </div>
         </div>
         
-        {/* Conditional Trending Section */}
-        {searchTerm === '' && <TrendingSection />}
-        
-        {/* Valerians List */}
-        <div className="mb-4">
-          <h2 className="text-base sm:text-lg md:text-xl font-semibold uppercase tracking-wide">
-            {filteredValerians.length} Valerians
-          </h2>
-        </div>
         {filteredValerians.length === 0 ? (
-          <p className="text-center text-indigo-300 mt-4 sm:mt-8 text-xs sm:text-sm uppercase tracking-wide">No Valerians found. Try a different search term.</p>
+          <p className="text-center text-indigo-300 mt-4 sm:mt-8 text-xs sm:text-sm uppercase tracking-wide">
+            No Valerians found. Try a different search term.
+          </p>
         ) : (
           starRatings.map((stars) => (
             groupedValerians[stars].length > 0 && (
