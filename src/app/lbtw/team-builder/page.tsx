@@ -1,14 +1,19 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { collection, addDoc, getDocs, getDoc, updateDoc, doc, Timestamp, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { valerians, Valerian } from '@/data/valerians';
-import CommentSection from '@/components/CommentSection';
 import { CheckCircle, ThumbsUp, ThumbsDown, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link'
+import { debounce } from 'lodash'
+import dynamic from 'next/dynamic';
+
+const CommentSection = dynamic(() => import('@/components/CommentSection'), {
+    loading: () => <div className="animate-pulse h-32 bg-indigo-800 rounded-lg"></div>
+});
 
 const levelRanges = [
   { id: 1, label: "Lvl 1-3", stars: [1, 4] },
@@ -48,13 +53,13 @@ const TeamBuilder: React.FC = () => {
     setTeams(fetchedTeams);
   };
 
-  const handleValerianSelection = (valerian: Valerian) => {
+  const handleValerianSelection = useCallback((valerian: Valerian) => {
     if (selectedValerians.some(v => v.id === valerian.id)) {
       setSelectedValerians(prev => prev.filter(v => v.id !== valerian.id));
     } else if (selectedValerians.length < 5) {
       setSelectedValerians(prev => [...prev, valerian]);
     }
-  };
+  }, [selectedValerians]);
 
   const isTeamDuplicate = (newTeam: number[]) => {
     return teams.some(team => {
@@ -95,7 +100,7 @@ const TeamBuilder: React.FC = () => {
     setSelectedTeam(team);
   };
 
-  const handleVote = async (teamId: string, isUpvote: boolean) => {
+  const handleVote = debounce(async (teamId: string, isUpvote: boolean) => {
     const currentVote = userVotes[teamId];
     
     if (currentVote === 'upvote' && isUpvote) return;
@@ -140,7 +145,7 @@ const TeamBuilder: React.FC = () => {
     } else {
       console.error('Team document not found');
     }
-  };
+  }, 300);
 
   const toggleSection = (rangeId: number) => {
     setExpandedSections(prev => ({
@@ -228,7 +233,7 @@ const TeamBuilder: React.FC = () => {
           </motion.div>
         ))}
         {[...Array(5 - selectedValerians.length)].map((_, index) => (
-          <div key={index} className="w-16 md:w-24 h-24 md:h-36 bg-indigo-700 rounded-lg opacity-50 flex items-center justify-center shadow-md">
+          <div key={index} className="w-16 md:w-24 h-24 md:h-36 bg-indigo-700 rounded-lg opacity-50 flex items-center justify-center shadow-md"   style={{ aspectRatio: '1' }}>
             <div className="w-12 h-12 md:w-20 md:h-20 bg-indigo-600 rounded-full"></div>
           </div>
         ))}
@@ -248,9 +253,11 @@ const TeamBuilder: React.FC = () => {
   );
 
   const TeamList: React.FC<{ levelRange: typeof levelRanges[0], onTeamSelect: (team: any) => void }> = ({ levelRange, onTeamSelect }) => {
-    const filteredTeams = teams
-      .filter(team => team.levelRange === levelRange.id)
-      .sort((a, b) => b.upvotes - a.upvotes);
+    const filteredTeams = useMemo(() => {
+      return teams
+        .filter(team => team.levelRange === levelRange.id)
+        .sort((a, b) => b.upvotes - a.upvotes);
+    }, [teams, levelRange.id]);
 
     return (
       <div className="space-y-4 md:space-y-6">
